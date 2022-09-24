@@ -12,9 +12,9 @@ function grep { $input | & /usr/bin/env grep --color=auto $args }
 function less { $input | & /usr/bin/env less -FSRXc $args }
 function la { Get-ChildItem $args -Force }
 function ls { & /usr/bin/env ls --color=auto --group-directories-first $args }
+function ll { & /usr/bin/env ls -lAh --color=auto --time-style=long-iso --group-directories-first $args }
 function l { & /usr/bin/env ls -1 --color=auto --group-directories-first $args }
 function lsa { & /usr/bin/env ls -lah --color=auto --time-style=long-iso --group-directories-first $args }
-function ll { & /usr/bin/env exa -lagh --color=auto --time-style=long-iso --group-directories-first $args }
 function md { mkdir -p $args }
 function mkdir { & /usr/bin/env mkdir -pv $args }
 function mv { & /usr/bin/env mv -iv $args }

@@ -56,6 +56,7 @@ alpine)
   sudo tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
   sudo chmod +x /opt/microsoft/powershell/7/pwsh
   [ -f /usr/bin/pwsh ] || sudo ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
+  ;;
 *)
   [ "$SYS_ID" = 'opensuse' ] && zypper in -y libicu
   while [[ ! -f powershell.tar.gz ]]; do

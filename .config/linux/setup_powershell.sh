@@ -1,7 +1,7 @@
 #!/bin/bash
 : '
-.config/linux/install_pwsh.sh      #* install basic oh-my-posh profile
-.config/linux/install_pwsh.sh pl   #* install powerline oh-my-posh profile
+.config/linux/setup_powershell.sh     #* install basic oh-my-posh profile
+.config/linux/setup_powershell.sh pl  #* install powerline oh-my-posh profile
 '
 if [[ $(id -u) -eq 0 ]]; then
   echo -e '\e[91mDo not run the script with sudo!'
@@ -12,9 +12,9 @@ fi
 sudo .config/linux/scripts/install_omp.sh
 # copy omp theme
 if [ "$1" = 'pl' ]; then
-  sudo \cp -f .assets/config/theme-pl.omp.json /etc/profile.d/theme.omp.json
+  sudo \cp -f .config/linux/config/theme-pl.omp.json /etc/profile.d/theme.omp.json
 else
-  sudo \cp -f .assets/config/theme.omp.json /etc/profile.d/theme.omp.json
+  sudo \cp -f .config/linux/config/theme.omp.json /etc/profile.d/theme.omp.json
 fi
 
 # *PowerShell

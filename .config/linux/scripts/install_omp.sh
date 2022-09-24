@@ -24,5 +24,4 @@ echo "Install $APP v$REL"
 while [[ ! -f posh-linux-amd64 ]]; do
   curl -LsOk 'https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64'
 done
-mkdir -p /opt/omp && install -o root -g root -m 0755 posh-linux-amd64 /opt/omp/oh-my-posh && rm -f posh-linux-amd64
-[ -f /usr/bin/oh-my-posh ] || ln -s /opt/omp/oh-my-posh /usr/bin/oh-my-posh
+mkdir -p /opt/omp && install -o root -g root -m 0755 posh-linux-amd64 /usr/bin/oh-my-posh && rm -f posh-linux-amd64

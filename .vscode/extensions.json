@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "aaron-bond.better-comments",
+    "DavidAnson.vscode-markdownlint",
+    "EditorConfig.EditorConfig",
+    "ms-vscode.powershell",
+  ]
+}

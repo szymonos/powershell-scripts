@@ -1,0 +1,24 @@
+{
+  "[powershell]": {
+    "editor.defaultFormatter": "ms-vscode.powershell",
+    "editor.semanticHighlighting.enabled": true,
+    "editor.tabSize": 4,
+  },
+  "editor.insertSpaces": true,
+  "editor.rulers": [
+    120
+  ],
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "git.branchProtection": [
+    "main"
+  ],
+  "powershell.codeFormatting.addWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.autoCorrectAliases": true,
+  "powershell.codeFormatting.preset": "OTBS",
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "powershell.codeFormatting.whitespaceBetweenParameters": true,
+  "powershell.integratedConsole.startInBackground": true,
+}

@@ -8,7 +8,7 @@ Profile, theme, and aliases/functions are being installed globally, so the confi
 
 Datetime formatting is set to respect **ISO-8601**, if you prefer other settings, you can remove the following line from the [profile.ps1](.config/linux/config/profile.ps1):
 
-``` powershell
+``` PowerShell
 [Threading.Thread]::CurrentThread.CurrentCulture = 'en-SE'
 ```
 
@@ -76,6 +76,6 @@ One of the best features for the PS CLI experience is the PSReadLine **List Pred
 - **Aliases/Functions** - PowerShell treats aliases differently than bash - you cannot alias command with additional parameters - for this you need to create a function. It breaks autocompletion, so all _aliases_ defined in the function are not aware of the possible arguments. Another _issue_ is that you cannot create a function named the same as the _aliased_ command, for that you need to use env command like this:
 `function mv { & /usr/bin/env mv -iv $args }`.
 
-- **Invoke-Sudo** - this is a function, defined in [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1), to run a command as sudo (aliased as sudo). The function has been created to prevent existing aliases, and functions when running commands as sudo in PowerShell. It does work for oneliner functions and all aliases, but breaks when you pass quoted parameters with spaces, so e.g. command `sudo ls './one two/'` won't work.
+- **Invoke-Sudo** - this is a function, defined in [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1), to run a command as sudo (aliased as sudo). The function has been created to persist existing aliases, and functions when running commands as sudo in PowerShell. It does work for oneliner functions and all aliases, but breaks when you pass quoted parameters with spaces, so e.g. command `sudo ls './one two/'` won't work.
 
-- **PowerShell Logo** - by default, when you run `pwsh` command, it prints _annoying_ logo. It is supposed to be changed in PowerShell v7.3, but as of now I recommend creating an alias `alias pwsh='pwsh -NoLogo'` in bash profile, to prevent it, when starting PowerShell.
+- **PowerShell Logo** - by default, when you run the `pwsh` command, it prints _annoying_ logo. It is supposed to be changed in PowerShell v7.3, but as of now I recommend creating an alias `alias pwsh='pwsh -NoLogo'` in the bash profile, to prevent it when starting PowerShell.

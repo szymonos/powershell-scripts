@@ -77,3 +77,5 @@ One of the best features for the PS CLI experience is the PSReadLine **List Pred
 `function mv { & /usr/bin/env mv -iv $args }`.
 
 - **Invoke-Sudo** - this is a function, defined in [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1), to run a command as sudo (aliased as sudo). The function has been created to prevent existing aliases, and functions when running commands as sudo in PowerShell. It does work for oneliner functions and all aliases, but breaks when you pass quoted parameters with spaces, so e.g. command `sudo ls './one two/'` won't work.
+
+- **PowerShell Logo** - by default, when you run `pwsh` command, it prints _annoying_ logo. It is supposed to be changed in PowerShell v7.3, but as of now I recommend creating an alias `alias pwsh='pwsh -NoLogo'` in bash profile, to prevent it, when starting PowerShell.

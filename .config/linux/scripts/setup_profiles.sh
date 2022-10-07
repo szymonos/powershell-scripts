@@ -1,9 +1,9 @@
 #!/bin/bash
 : '
-.config/linux/scripts/setup_profile_allusers.sh
+.config/linux/scripts/setup_profiles.sh
 '
-if [[ $(id -u) -eq 0 ]]; then
-  echo -e '\e[91mDo not run the script with sudo!'
+if [[ $EUID -eq 0 ]]; then
+  echo -e '\e[91mDo not run the script with sudo!\e[0m'
   exit 1
 fi
 

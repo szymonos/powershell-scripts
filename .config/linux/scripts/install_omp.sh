@@ -2,7 +2,7 @@
 : '
 sudo .config/linux/scripts/install_omp.sh
 '
-if [[ $(id -u) -ne 0 ]]; then
+if [[ $EUID -ne 0 ]]; then
   echo -e '\e[91mRun the script with sudo!\e[0m'
   exit 1
 fi
@@ -24,4 +24,4 @@ echo "Install $APP v$REL"
 while [[ ! -f posh-linux-amd64 ]]; do
   curl -LsOk 'https://github.com/JanDeDobbeleer/oh-my-posh/releases/latest/download/posh-linux-amd64'
 done
-mkdir -p /opt/omp && install -o root -g root -m 0755 posh-linux-amd64 /usr/bin/oh-my-posh && rm -f posh-linux-amd64
+install -o root -g root -m 0755 posh-linux-amd64 /usr/bin/oh-my-posh && rm -f posh-linux-amd64

@@ -2,8 +2,8 @@
 : '
 sudo .config/linux/scripts/install_pwsh.sh
 '
-if [[ $(id -u) -ne 0 ]]; then
-  echo -e '\e[91mRun the script with sudo!'
+if [[ $EUID -ne 0 ]]; then
+  echo -e '\e[91mRun the script with sudo!\e[0m'
   exit 1
 fi
 

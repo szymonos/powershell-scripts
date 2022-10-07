@@ -56,6 +56,14 @@ You can remove all the resources installed with the above commands, by running:
 .config/linux/clean_pwsh.sh
 ```
 
+## Upgdate
+
+You can update `oh-my-posh`, `PowerShell` and its modules, by running:
+
+``` shell
+.config/linux/update_powershell.sh
+```
+
 ## Hints
 
 One of the best features for the PS CLI experience is the PSReadLine **List PredictionView**. Included profile turns it on by default, but also sets convenient shortcuts for navigation, so you don't have to take off your hand to reach the arrows:

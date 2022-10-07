@@ -2,7 +2,7 @@
 
 ## Preface
 
-This is PowerShell on Linux configuration guide, to provide the streamlined and convenient experience to not only install and set up the PowerShell with optimized default settings and [oh-my-posh](https://ohmyposh.dev/) prompt theme, which is a cross-platform and cross shell, prompt theme engine.
+This is PowerShell on Linux configuration guide, to provide a streamlined and convenient experience to not only install and set up the PowerShell with optimized default settings and [oh-my-posh](https://ohmyposh.dev/) prompt theme, which is a cross-platform and cross shell, prompt theme engine.
 
 Profile, theme, and aliases/functions are being installed globally, so the configuration is preserved also when running as sudo.
 
@@ -56,9 +56,9 @@ You can remove all the resources installed with the above commands, by running:
 .config/linux/clean_pwsh.sh
 ```
 
-## Upgdate
+## Update
 
-You can update `oh-my-posh`, `PowerShell` and its modules, by running:
+You can update `oh-my-posh`, `PowerShell`, and its modules, by running:
 
 ``` shell
 .config/linux/update_powershell.sh
@@ -86,4 +86,4 @@ One of the best features for the PS CLI experience is the PSReadLine **List Pred
 
 - **Invoke-Sudo** - this is a function, defined in [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1), to run a command as sudo (aliased as sudo). The function has been created to persist existing aliases, and functions when running commands as sudo in PowerShell. It does work for oneliner functions and all aliases, but breaks when you pass quoted parameters with spaces, so e.g. command `sudo ls './one two/'` won't work.
 
-- **PowerShell Logo** - by default, when you run the `pwsh` command, it prints _annoying_ logo. It is supposed to be changed in PowerShell v7.3, but as of now I recommend creating an alias `alias pwsh='pwsh -NoLogo'` in the bash profile, to prevent it when starting PowerShell.
+- **PowerShell Logo** - by default, when you run the `pwsh` command, it prints an _annoying_ logo. It is supposed to be changed in PowerShell v7.3, but as of now I recommend creating an alias `alias pwsh='pwsh -NoLogo'` in the bash profile, to prevent it when starting PowerShell.

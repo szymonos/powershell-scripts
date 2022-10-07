@@ -1,10 +1,4 @@
 # *Functions
-function Get-CmdAlias ([string]$CmdletName) {
-    Get-Alias | `
-        Where-Object -FilterScript { $_.Definition -match $CmdletName } | `
-        Sort-Object -Property Definition, Name | `
-        Select-Object -Property Definition, Name
-}
 function .. { Set-Location ../ }
 function ... { Set-Location ../../ }
 function cd.. { Set-Location ../ }
@@ -48,7 +42,6 @@ function Invoke-Sudo {
 
 # *Aliases
 Set-Alias -Name _ -Value Invoke-SudoPS
-Set-Alias -Name alias -Value Get-CmdAlias
 Set-Alias -Name c -Value Clear-Host
 Set-Alias -Name rd -Value rmdir
 Set-Alias -Name sudo -Value Invoke-Sudo

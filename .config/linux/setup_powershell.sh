@@ -28,7 +28,7 @@ PROFILE_PATH=$(pwsh -nop -c '[IO.Path]::GetDirectoryName($PROFILE.AllUsersAllHos
 SCRIPTS_PATH=$(pwsh -nop -c '$env:PSModulePath.Split(":")[1].Replace("Modules", "Scripts")')
 
 # oh-my-posh profile
-sudo \cp -f "$OMP_PROFILE" "$PROFILE_PATH/theme.omp.json"
+sudo \cp -f $OMP_PROFILE "$PROFILE_PATH/theme.omp.json"
 # PowerShell profile
 sudo \cp -f .config/.assets/profile.ps1 $PROFILE_PATH
 # PowerShell functions

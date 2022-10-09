@@ -23,7 +23,7 @@ param (
 .config/windows/scripts/install_pwsh.ps1
 
 # *Setup profile
-Invoke-RefreshPathEnvVariable
+Update-SessionEnvironment
 .config/windows/scripts/setup_profile.ps1
 
 # *Copy assets

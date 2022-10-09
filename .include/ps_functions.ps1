@@ -60,47 +60,46 @@ function Test-IsAdmin {
     }
 }
 
-function Join-String {
-    [CmdletBinding()]
-    [OutputType([string])]
-    param (
-        [Parameter(ValueFromPipeline)]
-        [string[]]${InputObject},
+if ($PSVersionTable.PSEdition -eq 'Desktop') {
+    function Join-String {
+        <#
+        .SYNOPSIS
+        Join strings from pipeline.
+        #>
+        [CmdletBinding()]
+        [OutputType([string])]
+        param (
+            [Parameter(Mandatory, ValueFromPipeline)]
+            [string[]]${InputObject},
 
-        [Parameter(Position = 0)]
-        [string]$delim = ','
-    )
-    begin {
-        $temp = [Collections.Generic.List[string]]::new()
-    }
-    process {
-        $Item.ForEach({ $temp.Add($_) })
-    }
-    end {
-        $temp -join $delim
+            [Parameter(Position = 0)]
+            [ValidateNotNullorEmpty()]
+            [string]$Separator = ','
+        )
+        begin {
+            $temp = [Collections.Generic.List[string]]::new()
+        }
+        process {
+            $InputObject.ForEach({ $temp.Add($_) })
+        }
+        end {
+            $temp -join $Separator
+        }
     }
 }
 
-function Join-String {
-    param(
-        [string]$delim = ','
-    )
-    begin {
-        $temp = [Collections.Generic.List[string]]::new()
-    }
-    process {
-        $temp.Add($_)
-    }
-    end {
-        $temp -join $delim
-    }
-}
-
-function Invoke-RefreshPathEnvVariable {
+<#
+.SYNOPSIS
+Refresh path environment variable for process scope.
+#>
+function Update-SessionEnvironment {
     $envPath = @('Machine', 'User', 'Process') | `
-    ForEach-Object { [Environment]::GetEnvironmentVariable('Path', $_).Split(';') } | `
-    Select-Object -Unique | `
-    Where-Object { $_ }
+        ForEach-Object { [Environment]::GetEnvironmentVariable('Path', $_).Split(';') } | `
+        Select-Object -Unique | `
+        Where-Object { $_ } | `
+        Join-String -Separator ';'
 
-    [Environment]::SetEnvironmentVariable('Path', ([string]::Join(';', $envPath)), 'Process')
+    [Environment]::SetEnvironmentVariable('Path', $envPath, 'Process')
 }
+
+Set-Alias -Name refreshenv -Value Update-SessionEnvironment

@@ -14,26 +14,6 @@ Datetime formatting is set to respect **ISO-8601**, if you prefer other settings
 
 and remove `--time-style=long-iso` parameter from **ls** aliases/functions in the [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1) file.
 
-## Folder structure
-
-``` sh
-.
-├── config                          # folder with profile, themes, aliases/functions
-│   ├── profile.ps1                   # PowerShell profile
-│   ├── ps_aliases_common.ps1         # common aliases/functions
-│   ├── ps_aliases_git.ps1            # git aliases/functions
-│   ├── ps_aliases_kubectl.ps1        # kubectl aliases/functions
-│   ├── theme.omp.json                # oh-my-posh prompt theme using standard fonts
-│   └── theme-pl.omp.json             # oh-my-posh prompt theme using PowerLine fonts
-├── scripts                         # installation/configuration scripts
-│   ├── install_omp.sh                # oh-my-posh installation script
-│   ├── install_pwsh.sh               # PowerShell installation script
-│   └── setup_profile_allusers.sh     # configuration script
-├── clean_pwsh.sh                   # cleanup script, that removes PowerShell and all installed files
-├── setup_powershell.sh             # PowerShell installation and configuration script
-└── PS_LINUX.md                     # this file
-```
-
 ## Installation
 
 All scripts are intended to be run from the repository root folder. To install and configure Linux on PowerShell, just run the command:

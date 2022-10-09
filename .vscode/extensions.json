@@ -3,6 +3,7 @@
     "aaron-bond.better-comments",
     "DavidAnson.vscode-markdownlint",
     "EditorConfig.EditorConfig",
+    "foxundermoon.shell-format",
     "ms-vscode.powershell",
   ]
 }

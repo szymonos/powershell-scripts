@@ -1,6 +1,6 @@
 #!/bin/bash
 : '
-.config/linux/scripts/setup_profiles.sh
+.config/linux/scripts/setup_profile.sh
 '
 if [[ $EUID -eq 0 ]]; then
   echo -e '\e[91mDo not run the script with sudo!\e[0m'
@@ -24,10 +24,3 @@ $WarningPreference = 'Ignore';
 Set-PSResourceRepository -Name PSGallery -Trusted;
 Enable-ExperimentalFeature PSAnsiRenderingFileInfo, PSNativeCommandArgumentPassing
 EOF
-
-# add powershell kubectl autocompletion
-if type kubectl &>/dev/null; then
-  cat <<'EOF' | pwsh -nop -c -
-(kubectl completion powershell).Replace("'kubectl'", "'k'") > $PROFILE.CurrentUserAllHosts
-EOF
-fi

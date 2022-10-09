@@ -6,7 +6,7 @@ Script synopsis.
 #>
 $app = 'oh-my-posh'
 
-$rel = Invoke-CommandRetry {
+$rel = Invoke-CommandRetry -Verbose {
     (Invoke-RestMethod 'https://api.github.com/repos/JanDeDobbeleer/oh-my-posh/releases/latest').tag_name -replace '^v'
 }
 

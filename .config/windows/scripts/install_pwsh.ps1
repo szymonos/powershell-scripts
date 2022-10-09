@@ -6,7 +6,7 @@ Script synopsis.
 #>
 $app = 'pwsh'
 
-$rel = Invoke-CommandRetry {
+$rel = Invoke-CommandRetry -Verbose {
     (Invoke-RestMethod 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest').tag_name -replace '^v'
 }
 

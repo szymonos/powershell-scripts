@@ -3,11 +3,10 @@
 .SYNOPSIS
 Script for updating PowerShell modules and cleaning-up old versions.
 .EXAMPLE
-.config/scripts/manage_psmodules.ps1       # *update and clean up modules
-.config/scripts/manage_psmodules.ps1 -u    # *update modules only
-.config/scripts/manage_psmodules.ps1 -c    # *clean up modules only
+.include/manage_psmodules.ps1       # *update and clean up modules
+.include/manage_psmodules.ps1 -u    # *update modules only
+.include/manage_psmodules.ps1 -c    # *clean up modules only
 #>
-
 param (
     [Alias('u')]
     [switch]$Update,
@@ -15,15 +14,11 @@ param (
     [Alias('c')]
     [switch]$CleanUp
 )
+# source common functions
+. .include/ps_functions.ps1
 
-# check if the script is being run with elevated privileges
-$isAdmin = if ($IsWindows) {
-    ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')
-} else {
-    ((id -u) -eq 0) ? $true : $false
-}
 # set update scope
-if ($isAdmin) {
+if (Test-IsAdmin) {
     $param = @{ Scope = 'AllUsers' }
 } else {
     $param = @{ Scope = 'CurrentUser' }

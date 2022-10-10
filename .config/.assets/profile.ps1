@@ -30,15 +30,15 @@ function cds { Set-Location $SWD }
 
 #region environment variables
 if ($IsWindows) {
-    $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1]
-    $env:OS_VERSION = Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'
-    $env:PROFILE_PATH = [IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)
-    $env:SCRIPTS_PATH = [IO.Path]::Join($env:PROFILE_PATH, 'Scripts')
+    $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1] + ' ' + `
+        "($(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'))"
+    $env:OMP_PATH = [IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)
+    $env:SCRIPTS_PATH = [IO.Path]::Join($env:OMP_PATH, 'Scripts')
     $env:HOSTNAME = $env:COMPUTERNAME
 } elseif ($IsLinux) {
     $env:OS_EDITION = (Select-String -Pattern '^PRETTY_NAME=(.*)' -Path /etc/os-release).Matches.Groups[1].Value.Trim("`"|'")
-    $env:PROFILE_PATH = [IO.Path]::GetDirectoryName($PROFILE.AllUsersAllHosts)
-    $env:SCRIPTS_PATH = $env:PSModulePath.Split(':')[1].Replace('Modules', 'Scripts')
+    $env:OMP_PATH = '/usr/local/share/oh-my-posh'
+    $env:SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
     $env:COMPUTERNAME = $env:HOSTNAME
 }
 #endregion
@@ -61,6 +61,6 @@ Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File | ForEach
 Write-Host "$($PSStyle.Foreground.BrightWhite)$env:OS_EDITION | PowerShell $($PSVersionTable.PSVersion)$($PSStyle.Reset)"
 
 # initialize oh-my-posh prompt
-if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path "$env:PROFILE_PATH/theme.omp.json")) {
-    oh-my-posh --init --shell pwsh --config "$env:PROFILE_PATH/theme.omp.json" | Invoke-Expression
+if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path "$env:OMP_PATH/theme.omp.json")) {
+    oh-my-posh --init --shell pwsh --config "$env:OMP_PATH/theme.omp.json" | Invoke-Expression
 }

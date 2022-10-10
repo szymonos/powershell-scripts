@@ -34,14 +34,13 @@ $ompProfile = switch ($PromptFonts) {
 }
 $profilePath = pwsh -NoProfile -Command '[IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)'
 $scriptsPath = [IO.Path]::Combine($profilePath, 'Scripts')
-# create scripts folder
-New-Item $scriptsPath -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
 
-# oh-my-posh profile
+# oh-my-posh theme
 Copy-Item -Path $ompProfile -Destination ([IO.Path]::Combine($profilePath, 'theme.omp.json'))
 # PowerShell profile
 Copy-Item -Path .config/.assets/profile.ps1 -Destination $profilePath
 # PowerShell functions
+New-Item $scriptsPath -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
 Copy-Item -Path .config/.assets/ps_aliases_common.ps1 -Destination $scriptsPath
 Copy-Item -Path .config/.assets/ps_aliases_windows.ps1 -Destination $scriptsPath
 # git functions

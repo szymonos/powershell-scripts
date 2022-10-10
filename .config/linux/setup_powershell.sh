@@ -20,27 +20,30 @@ sudo .config/linux/scripts/install_pwsh.sh
 # *Copy assets
 # calculate variables
 if [[ "$1" = 'pl' ]]; then
-  OMP_PROFILE='.config/.assets/theme-pl.omp.json'
+  OMP_THEME='.config/.assets/theme-pl.omp.json'
 else
-  OMP_PROFILE='.config/.assets/theme.omp.json'
+  OMP_THEME='.config/.assets/theme.omp.json'
 fi
-PROFILE_PATH=$(pwsh -nop -c '[IO.Path]::GetDirectoryName($PROFILE.AllUsersAllHosts)')
-SCRIPTS_PATH=$(pwsh -nop -c '$env:PSModulePath.Split(":")[1].Replace("Modules", "Scripts")')
+PS_PROFILE_PATH=$(pwsh -nop -c '[IO.Path]::GetDirectoryName($PROFILE.AllUsersAllHosts)')
+PS_SCRIPTS_PATH='/usr/local/share/powershell/Scripts'
+OH_MY_POSH_PATH='/usr/local/share/oh-my-posh'
 
-# oh-my-posh profile
-sudo \cp -f $OMP_PROFILE "$PROFILE_PATH/theme.omp.json"
+# oh-my-posh theme
+sudo \mkdir -p $OH_MY_POSH_PATH
+sudo \cp -f $OMP_THEME "$OH_MY_POSH_PATH/theme.omp.json"
 # PowerShell profile
-sudo \cp -f .config/.assets/profile.ps1 $PROFILE_PATH
+sudo \cp -f .config/.assets/profile.ps1 $PS_PROFILE_PATH
 # PowerShell functions
-sudo \cp -f .config/.assets/ps_aliases_common.ps1 $SCRIPTS_PATH
-sudo \cp -f .config/.assets/ps_aliases_linux.ps1 $SCRIPTS_PATH
+sudo \mkdir -p $PS_SCRIPTS_PATH
+sudo \cp -f .config/.assets/ps_aliases_common.ps1 $PS_SCRIPTS_PATH
+sudo \cp -f .config/.assets/ps_aliases_linux.ps1 $PS_SCRIPTS_PATH
 # git functions
 if type git &>/dev/null; then
-  sudo \cp -f .config/.assets/ps_aliases_git.ps1 $SCRIPTS_PATH
+  sudo \cp -f .config/.assets/ps_aliases_git.ps1 $PS_SCRIPTS_PATH
 fi
 # kubectl functions
 if type -f kubectl &>/dev/null; then
-  sudo \cp -f .config/.assets/ps_aliases_kubectl.ps1 $SCRIPTS_PATH
+  sudo \cp -f .config/.assets/ps_aliases_kubectl.ps1 $PS_SCRIPTS_PATH
   # add powershell kubectl autocompletion
   cat <<'EOF' | pwsh -nop -c -
 $kctl = Get-Command kubectl -All | Where-Object -Property Version | Select-Object -First 1 -ExpandProperty Source

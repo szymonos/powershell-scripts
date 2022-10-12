@@ -26,14 +26,14 @@ SYS_ID=$(grep -oPm1 '^ID(_LIKE)?=.*\K(alpine|arch|fedora|debian|ubuntu|opensuse)
 
 case $SYS_ID in
 fedora)
-  sudo dnf install -y "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-1.rh.x86_64.rpm"
+  dnf install -y "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-1.rh.x86_64.rpm"
   ;;
 debian | ubuntu)
   curl -Lsk -o powershell.deb "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell_${REL}-1.deb_amd64.deb"
-  sudo dpkg -i powershell.deb && rm -f powershell.deb
+  dpkg -i powershell.deb && rm -f powershell.deb
   ;;
 alpine)
-  sudo apk add --no-cache \
+  apk add --no-cache \
     ca-certificates \
     less \
     ncurses-terminfo-base \
@@ -47,24 +47,24 @@ alpine)
     zlib \
     icu-libs \
     curl
-  sudo apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache \
+  apk -X https://dl-cdn.alpinelinux.org/alpine/edge/main add --no-cache \
     lttng-ust
   while [[ ! -f powershell.tar.gz ]]; do
     curl -Lsk -o powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-linux-alpine-x64.tar.gz"
   done
-  sudo mkdir -p /opt/microsoft/powershell/7
-  sudo tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
-  sudo chmod +x /opt/microsoft/powershell/7/pwsh
-  [ -f /usr/bin/pwsh ] || sudo ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
+  mkdir -p /opt/microsoft/powershell/7
+  tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
+  chmod +x /opt/microsoft/powershell/7/pwsh
+  [ -f /usr/bin/pwsh ] || ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
   ;;
 *)
-  [ "$SYS_ID" = 'opensuse' ] && zypper in -y libicu
+  [ $SYS_ID = 'opensuse' ] && zypper in -y libicu || true
   while [[ ! -f powershell.tar.gz ]]; do
     curl -Lsk -o powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-linux-x64.tar.gz"
   done
-  sudo mkdir -p /opt/microsoft/powershell/7
-  sudo tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
-  sudo chmod +x /opt/microsoft/powershell/7/pwsh
-  [ -f /usr/bin/pwsh ] || sudo ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
+  mkdir -p /opt/microsoft/powershell/7
+  tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
+  chmod +x /opt/microsoft/powershell/7/pwsh
+  [ -f /usr/bin/pwsh ] || ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
   ;;
 esac

@@ -1,4 +1,3 @@
-#!/usr/bin/pwsh -nop
 <#
 .SYNOPSIS
 Script synopsis.

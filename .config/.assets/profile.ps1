@@ -52,7 +52,7 @@ if ($IsWindows) {
 @(
     [IO.Path]::Join($HOME, '.local', 'bin')
 ).ForEach{
-    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? $_.Replace('\', '\\') : $_)/?($([IO.Path]::PathSeparator)|$)") {
+    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
         $env:PATH = [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH)
     }
 }

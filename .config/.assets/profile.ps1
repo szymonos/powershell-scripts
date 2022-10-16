@@ -29,7 +29,7 @@ $SWD = $PWD.Path
 function cds { Set-Location $SWD }
 #endregion
 
-#region environment variables
+#region environment variables and aliases
 if ($IsWindows) {
     $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1] + ' ' + `
         "($(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'))"
@@ -42,26 +42,26 @@ if ($IsWindows) {
     $env:SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
     $env:COMPUTERNAME = $env:HOSTNAME
 }
-#endregion
-
-# update Path environment variable
-if ($IsLinux) {
-    @("$HOME/.local/bin") | ForEach-Object {
-        if ((Test-Path $_) -and $env:PATH -NotMatch $_) {
-            $env:PATH = [string]::Join(':', $_, $env:PATH)
-        }
-    }
-}
-
-# source ps aliases
-Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File | ForEach-Object {
+# aliases
+(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{
     . $_.FullName
 }
+#endregion
 
-# startup information
+#region PATH
+@(
+    [IO.Path]::Join($HOME, '.local', 'bin')
+).ForEach{
+    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? $_.Replace('\', '\\') : $_)/?($([IO.Path]::PathSeparator)|$)") {
+        $env:PATH = [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH)
+    }
+}
+#endregion
+
+#region startup
 Write-Host "$($PSStyle.Foreground.BrightWhite)$env:OS_EDITION | PowerShell $($PSVersionTable.PSVersion)$($PSStyle.Reset)"
 
-# initialize oh-my-posh prompt
 if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path "$env:OMP_PATH/theme.omp.json")) {
     oh-my-posh --init --shell pwsh --config "$env:OMP_PATH/theme.omp.json" | Invoke-Expression
 }
+#endregion

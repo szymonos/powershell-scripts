@@ -1,3 +1,4 @@
+#Requires -PSEdition Desktop
 <#
 .SYNOPSIS
 Script synopsis.

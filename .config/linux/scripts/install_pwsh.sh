@@ -29,6 +29,7 @@ fedora)
   dnf install -y "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-1.rh.x86_64.rpm"
   ;;
 debian | ubuntu)
+  export DEBIAN_FRONTEND=noninteractive
   curl -Lsk -o powershell.deb "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell_${REL}-1.deb_amd64.deb"
   dpkg -i powershell.deb && rm -f powershell.deb
   ;;

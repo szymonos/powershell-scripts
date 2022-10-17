@@ -44,9 +44,4 @@ fi
 # kubectl functions
 if type -f kubectl &>/dev/null; then
   sudo \cp -f .config/.assets/ps_aliases_kubectl.ps1 $PS_SCRIPTS_PATH
-  # add powershell kubectl autocompletion
-  cat <<'EOF' | pwsh -nop -c -
-$kctl = Get-Command kubectl -All | Where-Object -Property Version | Select-Object -First 1 -ExpandProperty Source
-(& $kctl completion powershell).Replace("'kubectl'", "'k'") >$PROFILE.CurrentUserAllHosts'
-EOF
 fi

@@ -22,6 +22,7 @@ fedora)
   sudo dnf remove -y powershell
   ;;
 debian | ubuntu)
+  export DEBIAN_FRONTEND=noninteractive
   sudo dpkg -r powershell
   ;;
 *)

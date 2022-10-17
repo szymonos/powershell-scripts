@@ -14,7 +14,7 @@ done
 
 if type $APP &>/dev/null; then
   VER=$(pwsh -nop -c '$PSVersionTable.PSVersion.ToString()')
-  if [ $REL = $VER ]; then
+  if [ "$REL" = "$VER" ]; then
     echo "$APP v$VER is already latest"
     exit 0
   fi
@@ -58,7 +58,7 @@ alpine)
   [ -f /usr/bin/pwsh ] || ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
   ;;
 *)
-  [ $SYS_ID = 'opensuse' ] && zypper in -y libicu || true
+  [ "$SYS_ID" = 'opensuse' ] && zypper in -y libicu || true
   while [[ ! -f powershell.tar.gz ]]; do
     curl -Lsk -o powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-linux-x64.tar.gz"
   done

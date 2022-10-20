@@ -5,6 +5,8 @@ Script synopsis.
 .EXAMPLE
 .config/windows/update_powershell.ps1
 #>
+. .include/ps_functions.ps1
+
 # *Upgrade oh-my-posh
 .config/windows/scripts/install_omp.ps1
 

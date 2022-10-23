@@ -15,14 +15,14 @@ done
 if type $APP &>/dev/null; then
   VER=$(pwsh -nop -c '$PSVersionTable.PSVersion.ToString()')
   if [ "$REL" = "$VER" ]; then
-    echo "$APP v$VER is already latest"
+    echo -e "\e[36m$APP v$VER is already latest\e[0m"
     exit 0
   fi
 fi
 
-echo "Install $APP v$REL"
+echo -e "\e[96minstalling $APP v$REL\e[0m"
 # determine system id
-SYS_ID=$(grep -oPm1 '^ID(_LIKE)?=.*\K(alpine|arch|fedora|debian|ubuntu|opensuse)' /etc/os-release)
+SYS_ID=$(grep -oPm1 '^ID(_LIKE)?=.*\K(arch|fedora|debian|ubuntu|opensuse)' /etc/os-release)
 
 case $SYS_ID in
 fedora)
@@ -64,7 +64,7 @@ alpine)
     curl -Lsk -o powershell.tar.gz "https://github.com/PowerShell/PowerShell/releases/download/v${REL}/powershell-${REL}-linux-x64.tar.gz"
   done
   mkdir -p /opt/microsoft/powershell/7
-  tar zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
+  tar -zxf powershell.tar.gz -C /opt/microsoft/powershell/7 && rm -f powershell.tar.gz
   chmod +x /opt/microsoft/powershell/7/pwsh
   [ -f /usr/bin/pwsh ] || ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
   ;;

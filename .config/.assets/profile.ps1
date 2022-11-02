@@ -34,7 +34,7 @@ if ($IsWindows) {
     $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1] + ' ' + `
         "($(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'))"
     $env:OMP_PATH = [IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)
-    $env:SCRIPTS_PATH = [IO.Path]::Join($env:OMP_PATH, 'Scripts')
+    $env:SCRIPTS_PATH = [IO.Path]::Combine($env:OMP_PATH, 'Scripts')
     $env:HOSTNAME = $env:COMPUTERNAME
 } elseif ($IsLinux) {
     $env:OS_EDITION = (Select-String -Pattern '^PRETTY_NAME=(.*)' -Path /etc/os-release).Matches.Groups[1].Value.Trim("`"|'")
@@ -50,7 +50,7 @@ if ($IsWindows) {
 
 #region PATH
 @(
-    [IO.Path]::Join($HOME, '.local', 'bin')
+    [IO.Path]::Combine($HOME, '.local', 'bin')
 ).ForEach{
     if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
         $env:PATH = [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH)

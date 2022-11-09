@@ -14,16 +14,13 @@ cat <<'EOF' | sudo pwsh -nop -c -
 $WarningPreference = 'Ignore';
 if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) { Set-PSResourceRepository -Name PSGallery -Trusted };
 if (-not ((Get-Module PSReadLine -ListAvailable -ErrorAction SilentlyContinue).Version.Minor -ge 2)) { Install-PSResource -Name PSReadLine -Scope AllUsers };
-if (-not (Get-Module posh-git -ListAvailable)) { Install-PSResource -Name posh-git -Scope AllUsers };
-if (-not $PSNativeCommandArgumentPassing) { Enable-ExperimentalFeature PSNativeCommandArgumentPassing };
-if (-not $PSStyle) { Enable-ExperimentalFeature PSAnsiRenderingFileInfo };
+if (-not (Get-Module posh-git -ListAvailable)) { Install-PSResource -Name posh-git -Scope AllUsers }
 EOF
 
 # *Setup CurrentUser profile
 cat <<'EOF' | pwsh -nop -c -
 $WarningPreference = 'Ignore';
 if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) { Set-PSResourceRepository -Name PSGallery -Trusted };
-if (-not $PSNativeCommandArgumentPassing) { Enable-ExperimentalFeature PSNativeCommandArgumentPassing };
-if (-not $PSStyle) { Enable-ExperimentalFeature PSAnsiRenderingFileInfo };
+New-Item ([IO.Path]::GetDirectoryName($PROFILE)) -ItemType Directory -ErrorAction SilentlyContinue | Out-Null;
 if (Test-Path /usr/bin/kubectl) { (/usr/bin/kubectl completion powershell).Replace("'kubectl'", "'k'") >$PROFILE }
 EOF

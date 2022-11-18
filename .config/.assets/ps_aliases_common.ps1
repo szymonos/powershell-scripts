@@ -3,10 +3,7 @@ function .. { Set-Location ../ }
 function ... { Set-Location ../../ }
 function .... { Set-Location ../../../ }
 function src { . $PROFILE.CurrentUserAllHosts }
-function la {
-    $arguments = $args.ForEach({ $_ -match ' ' ? "'$_'" : $_ })
-    Invoke-Expression "Get-ChildItem $arguments -Force"
-}
+function la { Get-ChildItem @args -Force }
 function Get-CmdAlias ([string]$CmdletName) {
     Get-Alias | `
         Where-Object -FilterScript { $_.Definition -match $CmdletName } | `

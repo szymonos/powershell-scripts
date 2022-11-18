@@ -15,7 +15,10 @@ sudo .config/linux/scripts/install_omp.sh
 sudo .config/linux/scripts/install_pwsh.sh
 
 # *Setup profile
-.config/linux/scripts/setup_profile.sh
+echo -e "\e[32msetting up profile for all users...\e[0m"
+sudo .config/linux/scripts/setup_profiles_allusers.ps1
+echo -e "\e[32msetting up profile for current user...\e[0m"
+.config/linux/scripts/setup_profiles_user.ps1
 
 # *Copy assets
 # calculate variables

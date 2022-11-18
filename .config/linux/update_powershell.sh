@@ -14,5 +14,5 @@ sudo .config/linux/scripts/install_omp.sh
 sudo .config/linux/scripts/install_pwsh.sh
 
 # *Update modules
-pwsh -nop .include/manage_psmodules.ps1
-sudo pwsh -nop .include/manage_psmodules.ps1
+.include/manage_psmodules.ps1
+sudo .include/manage_psmodules.ps1

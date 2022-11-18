@@ -1,3 +1,4 @@
+#!/usr/bin/env -S pwsh -nop
 #Requires -Version 7.0
 <#
 .SYNOPSIS

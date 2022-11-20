@@ -59,8 +59,6 @@ One of the best features for the PS CLI experience is the PSReadLine **List Pred
 
 ## Caveats
 
-- **PSNativeCommandArgumentPassing** - this is an experimental feature enabled during the installation for both, root, and user profiles. It is essential to have turned it on, otherwise, string parsing in PowerShell would be _"broken"_ and work differently than in bash. You can read more [here](https://learn.microsoft.com/en-us/powershell/scripting/learn/experimental-features?view=powershell-7.2#psnativecommandargumentpassing).
-
 - **Aliases/Functions** - PowerShell treats aliases differently than bash - you cannot alias command with additional parameters - for this you need to create a function. It breaks autocompletion, so all _aliases_ defined in the function are not aware of the possible arguments. Another _issue_ is that you cannot create a function named the same as the _aliased_ command, for that you need to use env command like this:
 `function mv { & /usr/bin/env mv -iv $args }`.
 

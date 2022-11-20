@@ -33,7 +33,3 @@ You can update `oh-my-posh`, `PowerShell`, and its modules, by running:
 ``` PowerShell
 .config/windows/update_powershell.ps1
 ```
-
-## Caveats
-
-- **PSNativeCommandArgumentPassing** - this is an experimental feature enabled during the installation for both, root, and user profiles. It is essential to have turned it on, otherwise, string parsing in PowerShell would be _"broken"_ and work differently than in bash. You can read more [here](https://learn.microsoft.com/en-us/powershell/scripting/learn/experimental-features?view=powershell-7.2#psnativecommandargumentpassing).

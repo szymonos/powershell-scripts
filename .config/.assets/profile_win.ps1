@@ -57,7 +57,7 @@ function cds { Set-Location $SWD }
 if ($IsWindows) {
     $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1] + ' ' + `
         "($(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'))"
-    $env:SCRIPTS_PATH = [IO.Path]::Join([IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts), 'Scripts')
+    $env:SCRIPTS_PATH = [IO.Path]::Combine([IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts), 'Scripts')
     $env:HOSTNAME = $env:COMPUTERNAME
 } elseif ($IsLinux) {
     $env:OS_EDITION = (Select-String -Pattern '^PRETTY_NAME=(.*)' -Path /etc/os-release).Matches.Groups[1].Value.Trim("`"|'")
@@ -72,7 +72,7 @@ if ($IsWindows) {
 
 #region PATH
 @(
-    [IO.Path]::Join($HOME, '.local', 'bin')
+    [IO.Path]::Combine($HOME, '.local', 'bin')
 ).ForEach{
     if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
         $env:PATH = [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH)
@@ -88,7 +88,7 @@ function Prompt {
     $promptPath = $PWD.Path.Replace($HOME, '~').Replace('Microsoft.PowerShell.Core\FileSystem::', '') -replace '\\$'
     $split = $promptPath.Split([IO.Path]::DirectorySeparatorChar)
     if ($split.Count -gt 3) {
-        $promptPath = [IO.Path]::Join((($split[0] -eq '~') ? '~' : ($IsWindows ? "$($PWD.Drive.Name):" : $split[1])), '..', $split[-1])
+        $promptPath = [IO.Path]::Combine((($split[0] -eq '~') ? '~' : ($IsWindows ? "$($PWD.Drive.Name):" : $split[1])), '..', $split[-1])
     }
     # run elevated indicator
     if (Test-IsAdmin) {

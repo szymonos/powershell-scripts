@@ -31,37 +31,30 @@ function cds { Set-Location $SWD }
 
 #region environment variables and aliases
 if ($IsWindows) {
-    $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1] + ' ' + `
-        "($(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'))"
-    $env:OMP_PATH = [IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)
-    $env:SCRIPTS_PATH = [IO.Path]::Join($env:OMP_PATH, 'Scripts')
-    $env:HOSTNAME = $env:COMPUTERNAME
+    [Environment]::SetEnvironmentVariable('OMP_PATH', [IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts))
+    [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine($env:OMP_PATH, 'Scripts'))
+
 } elseif ($IsLinux) {
-    $env:OS_EDITION = (Select-String -Pattern '^PRETTY_NAME=(.*)' -Path /etc/os-release).Matches.Groups[1].Value.Trim("`"|'")
-    $env:OMP_PATH = '/usr/local/share/oh-my-posh'
-    $env:SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
-    $env:COMPUTERNAME = $env:HOSTNAME
+    [Environment]::SetEnvironmentVariable('OMP_PATH', '/usr/local/share/oh-my-posh')
+    [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', '/usr/local/share/powershell/Scripts')
 }
+# $PATH variable
+@(
+    [IO.Path]::Combine($HOME, '.local', 'bin')
+).ForEach{
+    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
+        [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
+    }
+}
+
 # aliases
 (Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{
     . $_.FullName
 }
 #endregion
 
-#region PATH
-@(
-    [IO.Path]::Join($HOME, '.local', 'bin')
-).ForEach{
-    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
-        $env:PATH = [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH)
-    }
-}
-#endregion
-
 #region startup
-Write-Host "$($PSStyle.Foreground.BrightWhite)$env:OS_EDITION | PowerShell $($PSVersionTable.PSVersion)$($PSStyle.Reset)"
-
-if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path "$env:OMP_PATH/theme.omp.json")) {
-    oh-my-posh --init --shell pwsh --config "$env:OMP_PATH/theme.omp.json" | Invoke-Expression
+if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path $env:OMP_PATH/theme.omp.json)) {
+    oh-my-posh --init --shell pwsh --config $env:OMP_PATH/theme.omp.json | Invoke-Expression
 }
 #endregion

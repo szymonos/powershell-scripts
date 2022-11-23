@@ -16,7 +16,7 @@ sudo rm -fr /usr/local/share/oh-my-posh 2>/dev/null
 sudo rm -f /usr/bin/oh-my-posh 2>/dev/null
 
 # determine system id
-SYS_ID=$(grep -oPm1 '^ID(_LIKE)?=.*\K(fedora|debian|ubuntu)' /etc/os-release)
+SYS_ID=$(grep -oPm1 '^ID(_LIKE)?=.*?\K(fedora|debian|ubuntu)' /etc/os-release)
 case $SYS_ID in
 fedora)
   sudo dnf remove -y powershell

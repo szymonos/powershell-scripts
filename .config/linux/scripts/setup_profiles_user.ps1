@@ -3,7 +3,7 @@
 .SYNOPSIS
 Setting up PowerShell for the current user.
 .EXAMPLE
-.assets/provision/setup_profiles_user.ps1
+.config/linux/scripts/setup_profiles_user.ps1
 #>
 $WarningPreference = 'Ignore'
 
@@ -15,7 +15,7 @@ if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
 
 $profileSet = try { Select-String '__kubectl_debug' -Path $PROFILE -Quiet } catch { $false }
 if ((Test-Path /usr/bin/kubectl) -and -not $profileSet) {
-    Write-Host 'setting kubectl auto-completion...'
+    Write-Host 'adding kubectl auto-completion...'
     New-Item ([IO.Path]::GetDirectoryName($PROFILE)) -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
     (/usr/bin/kubectl completion powershell).Replace("'kubectl'", "'k'") >$PROFILE
 }

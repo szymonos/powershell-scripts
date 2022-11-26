@@ -14,4 +14,4 @@ Script synopsis.
 .config/windows/scripts/install_pwsh.ps1
 
 # *Update modules
-pwsh -NoProfile .include/manage_psmodules.ps1
+pwsh.exe -NoProfile .include/manage_psmodules.ps1

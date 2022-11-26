@@ -9,9 +9,9 @@ Script synopsis.
 # *Uninstall PowerShell Core
 if (Get-Command pwsh.exe -CommandType Application -ErrorAction SilentlyContinue) {
     # calculate path variables
-    $cuProfilePath = pwsh -NoProfile -Command '[IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)'
+    $cuProfilePath = pwsh.exe -NoProfile -Command '[IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)'
     # uninstall pwsh
-    Get-Process pwsh -ErrorAction SilentlyContinue | Stop-Process -Force
+    Get-Process pwsh.exe -ErrorAction SilentlyContinue | Stop-Process -Force
     winget uninstall --id Microsoft.PowerShell --force
     # delete folders
     Remove-Item -Force -Recurse $cuProfilePath

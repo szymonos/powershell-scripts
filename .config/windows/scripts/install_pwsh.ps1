@@ -11,7 +11,7 @@ $rel = Invoke-CommandRetry -Verbose {
 }
 
 if (Get-Command pwsh.exe -CommandType Application -ErrorAction SilentlyContinue) {
-    $ver = pwsh -nop -c '$PSVersionTable.PSVersion.ToString()'
+    $ver = pwsh.exe -nop -c '$PSVersionTable.PSVersion.ToString()'
     if ($rel -eq $ver) {
         Write-Host "$app v$ver is already latest"
         exit 0

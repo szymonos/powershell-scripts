@@ -32,7 +32,7 @@ $ompProfile = switch ($PromptFonts) {
     'standard' { '.config/.assets/theme.omp.json' }
     'powerline' { '.config/.assets/theme-pl.omp.json' }
 }
-$profilePath = pwsh -NoProfile -Command '[IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)'
+$profilePath = pwsh.exe -NoProfile -Command '[IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)'
 $scriptsPath = [IO.Path]::Combine($profilePath, 'Scripts')
 
 # oh-my-posh theme
@@ -51,5 +51,5 @@ if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) 
 if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
     Copy-Item -Path .config/.assets/ps_aliases_kubectl.ps1 -Destination $scriptsPath
     # add powershell kubectl autocompletion
-    pwsh -NoProfile -Command '(kubectl completion powershell).Replace("''kubectl''", "''k''") > $PROFILE'
+    pwsh.exe -NoProfile -Command '(kubectl completion powershell).Replace("''kubectl''", "''k''") > $PROFILE'
 }

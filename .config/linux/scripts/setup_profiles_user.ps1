@@ -13,8 +13,8 @@ if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
     Set-PSResourceRepository -Name PSGallery -Trusted
 }
 
-$profileSet = try { Select-String '__kubectl_debug' -Path $PROFILE -Quiet } catch { $false }
-if ((Test-Path /usr/bin/kubectl) -and -not $profileSet) {
+$kubectlSet = try { Select-String '__kubectl_debug' -Path $PROFILE -Quiet } catch { $false }
+if ((Test-Path /usr/bin/kubectl) -and -not $kubectlSet) {
     Write-Host 'adding kubectl auto-completion...'
     New-Item ([IO.Path]::GetDirectoryName($PROFILE)) -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
     (/usr/bin/kubectl completion powershell).Replace("'kubectl'", "'k'") >$PROFILE

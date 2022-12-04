@@ -1,6 +1,6 @@
 #!/bin/bash
 : '
-.config/linux/setup_powershell.sh --theme_font powerline
+.config/linux/setup_powershell.sh --theme_font powerline --ps_modules "do-common do-linux"
 '
 if [[ $EUID -eq 0 ]]; then
   echo -e '\e[91mDo not run the script with sudo!\e[0m'
@@ -9,6 +9,7 @@ fi
 
 # parse named parameters
 theme_font=${theme_font:-base}
+ps_modules=${ps_modules}
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     param="${1/--/}"
@@ -29,3 +30,14 @@ sudo .config/linux/scripts/setup_omp.sh --theme_font $theme_font
 sudo .config/linux/scripts/setup_profiles_allusers.ps1
 echo -e "\e[32msetting up profile for current user...\e[0m"
 .config/linux/scripts/setup_profiles_user.ps1
+if [[ -n "$ps_modules" ]] && [ -f ../ps-szymonos/module_manage.ps1 ]; then
+  echo -e "\e[32minstalling PowerShell modules...\e[0m"
+  modules=($ps_modules)
+  for mod in ${modules[@]}; do
+    if [ "$mod" = 'do-common' ]; then
+      sudo ../ps-szymonos/module_manage.ps1 "$mod" -CleanUp
+    else
+      ../ps-szymonos/module_manage.ps1 "$mod" -CleanUp
+    fi
+  done
+fi

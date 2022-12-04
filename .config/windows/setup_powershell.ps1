@@ -2,16 +2,26 @@
 <#
 .SYNOPSIS
 Script synopsis.
+.PARAMETER OmpTheme
+Choose if oh-my-posh prompt theme should use base or powerline fonts.
+Available values: 'base', 'powerline'
+.PARAMETER PSModules
+List of PowerShell modules from ps-szymonos repository to be installed.
 .EXAMPLE
-$PromptFonts = 'powerline'
-.config/windows/setup_powershell.ps1
-.config/windows/setup_powershell.ps1 -PromptFonts 'powerline'
+$OmpTheme = 'powerline'
+$PSModules = @(
+    'do-common'
+    'do-win'
+)
+.config/windows/setup_powershell.ps1 -m $PSModules
+.config/windows/setup_powershell.ps1 -o $OmpTheme -m $PSModules
 #>
 [CmdletBinding()]
 param (
-    [Parameter(Position = 0)]
-    [ValidateSet('standard', 'powerline')]
-    [string]$PromptFonts = 'standard'
+    [ValidateSet('base', 'powerline')]
+    [string]$OmpTheme = 'base',
+
+    [string[]]$PSModules
 )
 # source common functions
 . .include/ps_functions.ps1
@@ -28,8 +38,8 @@ Update-SessionEnvironment
 
 # *Copy assets
 # calculate variables
-$ompProfile = switch ($PromptFonts) {
-    'standard' { '.config/.assets/theme.omp.json' }
+$ompProfile = switch ($OmpTheme) {
+    'base' { '.config/.assets/theme.omp.json' }
     'powerline' { '.config/.assets/theme-pl.omp.json' }
 }
 $profilePath = pwsh.exe -NoProfile -Command '[IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts)'
@@ -51,4 +61,10 @@ if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContin
     Copy-Item -Path .config/.assets/ps_aliases_kubectl.ps1 -Destination $scriptsPath
     # add powershell kubectl autocompletion
     pwsh.exe -NoProfile -Command '(kubectl completion powershell).Replace("''kubectl''", "''k''") > $PROFILE'
+}
+# PowerShell modules
+if ($PSModules -and (Test-Path '../ps-szymonos/module_manage.ps1')) {
+    foreach ($module in $PSModules) {
+        pwsh.exe -NoProfile -Command "../ps-szymonos/module_manage.ps1 $module -CleanUp"
+    }
 }

@@ -26,15 +26,15 @@ if (Test-IsAdmin) {
 }
 
 if (-not $CleanUp) {
-    Write-Host "$($PSStyle.Foreground.Yellow)updating modules in $($PSStyle.Underline)$($param.Scope)$($PSStyle.UnderlineOff) scope...$($PSStyle.Reset)"
+    Write-Host "updating modules in the `e[1m$($param.Scope)`e[22m scope..." -ForegroundColor DarkYellow
     Update-PSResource @param -AcceptLicense
-    Write-Host "$($PSStyle.Foreground.Yellow)checking pre-release versions...$($PSStyle.Reset)"
+    Write-Host "checking pre-release versions..." -ForegroundColor DarkYellow
     $prerelease = Get-PSResource @param | Where-Object PrereleaseLabel
     foreach ($mod in $prerelease) {
         Write-Host "- $($mod.Name)"
         (Find-PSResource -Name $mod.Name -Prerelease) | ForEach-Object {
             if ($_.Version.ToString() -notmatch $mod.Version.ToString()) {
-                Write-Host "$($PSStyle.Foreground.Green)found newer version: $($PSStyle.Bold)$($_.Version)$($PSStyle.Reset)"
+                Write-Host "found newer version: `e[1m$($_.Version)`e[22m" -ForegroundColor DarkGreen
                 Update-PSResource @param -Name $mod.Name -Prerelease -AcceptLicense -Force
             }
         }
@@ -42,20 +42,20 @@ if (-not $CleanUp) {
 }
 
 if (-not $Update) {
-    Write-Host "$($PSStyle.Foreground.Yellow)getting duplicate modules...$($PSStyle.Reset)"
+    Write-Host "getting duplicate modules..." -ForegroundColor DarkYellow
     $dupedModules = Get-PSResource @param | Group-Object -Property Name | Where-Object Count -GT 1 | Select-Object -ExpandProperty Name
 
     foreach ($mod in $dupedModules) {
         $allVersions = Get-PSResource @param -Name $mod
         $latestVersion = ($allVersions | Sort-Object PublishedDate)[-1].Version
 
-        Write-Host "`n$($PSStyle.Foreground.Cyan)$($PSStyle.Underline)$($mod)$($PSStyle.UnderlineOff) - $($allVersions.Count) versions of the module found, latest: $($PSStyle.Bold)v$latestVersion$($PSStyle.Reset)"
+        Write-Host "`n`e[4m$($mod)`e[24m - $($allVersions.Count) versions of the module found, latest: `e[1mv$latestVersion`e[22m" -ForegroundColor DarkYellow
         Write-Host 'uninstalling...'
         foreach ($v in $allVersions.Where({ $_.Version -ne $latestVersion })) {
-            Write-Host "- $($PSStyle.Foreground.BrightMagenta)v$($v.Version)$($PSStyle.Reset)"
+            Write-Host "- `e[95mv$($v.Version)`e[0m"
             Uninstall-PSResource @param -Name $v.Name -Version ($v.Prerelease ? "$($v.Version)-$($v.Prerelease)" : "$($v.Version)") -SkipDependencyCheck
         }
     }
 }
 
-Write-Host "$($PSStyle.Foreground.BrightGreen)Done!$($PSStyle.Reset)"
+Write-Host "Done." -ForegroundColor Green

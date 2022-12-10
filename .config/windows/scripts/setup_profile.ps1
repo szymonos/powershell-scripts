@@ -5,7 +5,7 @@ Set up PowerShell profile on Windows.
 .EXAMPLE
 $OmpTheme = 'powerline'
 $PSModules = 'do-common do-win'
-.config/windows/setup_powershell.ps1 $OmpTheme -m $PSModules
+.config/windows/scripts/setup_profile.ps1 $OmpTheme -m $PSModules
 #>
 [CmdletBinding()]
 param (

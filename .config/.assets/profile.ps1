@@ -1,9 +1,8 @@
 #Requires -Version 7.2
-#Requires -Modules PSReadLine
 
 #region startup settings
 # import posh-git module for git autocompletion.
-if (Get-Command git -CommandType Application -ErrorAction SilentlyContinue) {
+if (Get-Module posh-git) {
     Import-Module posh-git; $GitPromptSettings.EnablePromptStatus = $false
 }
 # make PowerShell console Unicode (UTF-8) aware
@@ -31,7 +30,7 @@ function cds { Set-Location $SWD }
 
 #region environment variables and aliases
 if ($IsWindows) {
-    [Environment]::SetEnvironmentVariable('OMP_PATH', [IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts))
+    [Environment]::SetEnvironmentVariable('OMP_PATH', [IO.Path]::GetDirectoryName($PROFILE))
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine($env:OMP_PATH, 'Scripts'))
 
 } elseif ($IsLinux) {
@@ -53,7 +52,7 @@ if ($IsWindows) {
 }
 #endregion
 
-#region startup
+#region prompt
 if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path $env:OMP_PATH/theme.omp.json)) {
     oh-my-posh --init --shell pwsh --config $env:OMP_PATH/theme.omp.json | Invoke-Expression
 }

@@ -1,9 +1,8 @@
 #Requires -Version 7.2
-#Requires -Modules PSReadLine
 
 #region startup settings
 # import posh-git module for git autocompletion.
-if ($gitInstalled = [bool](Get-Command git -CommandType Application -ErrorAction SilentlyContinue)) {
+if (Get-Module posh-git) {
     Import-Module posh-git; $GitPromptSettings.EnablePromptStatus = $false
 }
 # make PowerShell console Unicode (UTF-8) aware
@@ -42,41 +41,24 @@ function Format-Duration ([timespan]$TimeSpan) {
         Default { '0ms' }
     }
 }
-function Test-IsAdmin {
-    [bool]$isAdmin = if ($IsWindows) {
-            ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')
-    } else {
-            ((id -u) -eq 0) ? $true : $false
-    }
-    return $isAdmin
-}
 function cds { Set-Location $SWD }
 #endregion
 
 #region environment variables and aliases
-if ($IsWindows) {
-    $env:OS_EDITION = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption.Split(' ', 2)[1] + ' ' + `
-        "($(Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -Name 'DisplayVersion'))"
-    $env:SCRIPTS_PATH = [IO.Path]::Combine([IO.Path]::GetDirectoryName($PROFILE.CurrentUserAllHosts), 'Scripts')
-    $env:HOSTNAME = $env:COMPUTERNAME
-} elseif ($IsLinux) {
-    $env:OS_EDITION = (Select-String -Pattern '^PRETTY_NAME=(.*)' -Path /etc/os-release).Matches.Groups[1].Value.Trim("`"|'")
-    $env:SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
-    $env:COMPUTERNAME = $env:HOSTNAME
-}
-# aliases
-(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{
-    . $_.FullName
-}
-#endregion
-
-#region PATH
+[Environment]::SetEnvironmentVariable('PROFILE_PATH', [IO.Path]::GetDirectoryName($PROFILE))
+[Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine($env:PROFILE_PATH, 'Scripts'))
+# $PATH variable
 @(
     [IO.Path]::Combine($HOME, '.local', 'bin')
 ).ForEach{
     if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
-        $env:PATH = [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH)
+        [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
     }
+}
+
+# aliases
+(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{
+    . $_.FullName
 }
 #endregion
 
@@ -91,7 +73,7 @@ function Prompt {
         $promptPath = [IO.Path]::Combine((($split[0] -eq '~') ? '~' : ($IsWindows ? "$($PWD.Drive.Name):" : $split[1])), '..', $split[-1])
     }
     # run elevated indicator
-    if (Test-IsAdmin) {
+    if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {
         [Console]::Write("`e[91m#`e[0m ")
     }
     # write last execution time
@@ -113,8 +95,4 @@ function Prompt {
     }
     return "`e[92m$("`u{276d} " * ($nestedPromptLevel + 1))`e[0m"
 }
-#endregion
-
-#region startup
-Write-Host "$($PSStyle.Foreground.BrightWhite)$env:OS_EDITION | PowerShell $($PSVersionTable.PSVersion)$($PSStyle.Reset)"
 #endregion

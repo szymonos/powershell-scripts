@@ -6,7 +6,7 @@ Script synopsis.
 Choose if oh-my-posh prompt theme should use base or powerline fonts.
 Available values: 'base', 'powerline'
 .PARAMETER PSModules
-List of PowerShell modules from ps-szymonos repository to be installed.
+List of PowerShell modules from ps-modules repository to be installed.
 .EXAMPLE
 $OmpTheme = 'none'
 $OmpTheme = 'powerline'

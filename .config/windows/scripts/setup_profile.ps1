@@ -77,9 +77,14 @@ while (-not (Get-Module posh-git -ListAvailable)) {
 }
 
 # *PowerShell modules
-# ps-szymonos modules
-if ($PSModules -and (Test-Path '../ps-szymonos/module_manage.ps1' -PathType Leaf)) {
-    $PSModules.Split() | ../ps-szymonos/module_manage.ps1 -CleanUp -Verbose
+# ps-modules modules
+if ($PSModules) {
+    if (-not (Test-Path '../ps-modules' -PathType Container)) {
+        # clone ps-modules repository if not exists
+        $remote = (git config --get remote.origin.url).Replace('powershell-scripts', 'ps-modules')
+        git clone $remote ../ps-modules
+    }
+    $PSModules.Split() | ../ps-modules/module_manage.ps1 -CleanUp -Verbose
 }
 
 # installed modules

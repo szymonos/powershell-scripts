@@ -1,5 +1,4 @@
 # *Functions
-function cd.. { Set-Location ../ }
 function grep { $input | & /usr/bin/env grep --color=auto @args }
 function less { $input | & /usr/bin/env less -FSRXc @args }
 function ip { $input | & /usr/bin/env ip --color=auto @args }

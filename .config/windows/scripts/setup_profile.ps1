@@ -51,6 +51,7 @@ if (-not (Test-Path $scriptsPath -PathType Container)) {
     New-Item $scriptsPath -ItemType Directory | Out-Null
 }
 Copy-Item -Path .config/.assets/ps_aliases_common.ps1 -Destination $scriptsPath
+Copy-Item -Path .config/.assets/ps_aliases_win.ps1 -Destination $scriptsPath
 # git functions
 if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
     Copy-Item -Path .config/.assets/ps_aliases_git.ps1 -Destination $scriptsPath

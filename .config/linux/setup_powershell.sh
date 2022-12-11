@@ -33,7 +33,7 @@ echo -e "\e[32msetting up profile for current user...\e[0m"
 if [[ -n "$ps_modules" ]]; then
   if [ ! -d ../ps-modules ]; then
     remote=$(git config --get remote.origin.url)
-    git clone ${remote/vagrant-scripts/ps-modules} ../ps-modules
+    git clone ${remote/powershell-scripts/ps-modules} ../ps-modules
   fi
   echo -e "\e[32minstalling PowerShell modules...\e[0m"
   modules=($ps_modules)

@@ -95,7 +95,8 @@ function Set-KubectlLocal {
 Change kubernetes context and sets the corresponding kubectl client version.
 #>
 function Set-KubectlUseContext {
-    Invoke-PrintRunCommand "kubectl config use-context $args"
+    Write-Host "kubectl config use-context $args" -ForegroundColor Magenta
+    kubectl config use-context @args
     Set-KubectlLocal
 }
 #endregion

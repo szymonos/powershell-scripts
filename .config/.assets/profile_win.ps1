@@ -2,8 +2,11 @@
 
 #region startup settings
 # import posh-git module for git autocompletion.
-if (Get-Module posh-git) {
-    Import-Module posh-git; $GitPromptSettings.EnablePromptStatus = $false
+try {
+    Import-Module posh-git -ErrorAction Stop
+    $GitPromptSettings.EnablePromptStatus = $false
+} catch {
+    Out-Null
 }
 # make PowerShell console Unicode (UTF-8) aware
 $OutputEncoding = [Console]::InputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new()
@@ -83,7 +86,7 @@ function Prompt {
     # write prompt path
     [Console]::Write("`e[94m`u{e0b3}`u{e0b2}`e[0m`e[104;1m$promptPath`e[0m`e[94m`u{e0b0}`u{e0b1}`e[0m ")
     # write git branch/status
-    if ($gitInstalled) {
+    if ($GitPromptSettings) {
         # get git status
         $gstatus = @(git status -b --porcelain=v2 2>$null)[1..4]
         if ($gstatus) {

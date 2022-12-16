@@ -66,7 +66,7 @@ if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContin
 # *PowerShell profile
 while (-not ((Get-Module PowerShellGet -ListAvailable).Version.Major -ge 3)) {
     Write-Host 'installing PowerShellGet...'
-    Install-Module PowerShellGet -AllowPrerelease -Scope AllUsers -Force
+    Install-Module PowerShellGet -AllowPrerelease -Force
 }
 if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
     Write-Host 'setting PSGallery trusted...'
@@ -74,7 +74,7 @@ if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
 }
 while (-not (Get-Module posh-git -ListAvailable)) {
     Write-Host 'installing posh-git...'
-    Install-PSResource -Name posh-git -Scope AllUsers
+    Install-PSResource -Name posh-git
 }
 
 # *PowerShell modules

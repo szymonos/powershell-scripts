@@ -1,6 +1,6 @@
 # *Functions
 function grep { $input | & /usr/bin/env grep --color=auto @args }
-function less { $input | & /usr/bin/env less -FSRXc @args }
+function less { $input | & /usr/bin/env less -FRXc @args }
 function ip { $input | & /usr/bin/env ip --color=auto @args }
 function ls { & /usr/bin/env ls --color=auto --time-style=long-iso --group-directories-first @args }
 function l { ls -1 @args }

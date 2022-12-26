@@ -9,27 +9,15 @@ $PSModules = 'do-common do-win'
 #>
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('none', 'base', 'powerline')]
+    [Alias('t')]
     [string]$OmpTheme,
 
     [Alias('m')]
-    [string]$PSModules = $null
+    [string]$PSModules
 )
 
 # *Copy assets
 # calculate variables
-$ompProfile = switch ($OmpTheme) {
-    none {
-        $null
-    }
-    base {
-        '.config/.assets/theme.omp.json'
-    }
-    powerline {
-        '.config/.assets/theme-pl.omp.json'
-    }
-}
 $profilePath = [IO.Path]::GetDirectoryName($PROFILE)
 $scriptsPath = [IO.Path]::Combine($profilePath, 'Scripts')
 
@@ -39,28 +27,39 @@ if (-not (Test-Path $profilePath -PathType Container)) {
 }
 
 # PowerShell profile
-if ($ompProfile) {
-    Copy-Item -Path $ompProfile -Destination ([IO.Path]::Combine($profilePath, 'theme.omp.json'))
-    Copy-Item -Path .config/.assets/profile.ps1 -Destination $PROFILE.CurrentUserAllHosts
+if ($OmpTheme) {
+    $ompProfile = [IO.Path]::Combine($profilePath, 'theme.omp.json')
+    if (Test-Path ".config/.assets/$OmpTheme" -PathType Leaf) {
+        Copy-Item -Path ".config/.assets/$OmpTheme" -Destination $ompProfile -Force
+    } else {
+        [Net.WebClient]::new().DownloadFile("https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/${OmpTheme}.omp.json", $ompProfile)
+    }
+    Copy-Item -Path .config/.assets/profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
 } else {
-    Copy-Item -Path .config/.assets/profile_win.ps1 -Destination $PROFILE.CurrentUserAllHosts
+    Copy-Item -Path .config/.assets/profile_win.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
 }
 
 # PowerShell functions
 if (-not (Test-Path $scriptsPath -PathType Container)) {
     New-Item $scriptsPath -ItemType Directory | Out-Null
 }
-Copy-Item -Path .config/.assets/ps_aliases_common.ps1 -Destination $scriptsPath
-Copy-Item -Path .config/.assets/ps_aliases_win.ps1 -Destination $scriptsPath
+Copy-Item -Path .config/.assets/ps_aliases_common.ps1 -Destination $scriptsPath -Force
+Copy-Item -Path .config/.assets/ps_aliases_win.ps1 -Destination $scriptsPath -Force
 # git functions
 if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
-    Copy-Item -Path .config/.assets/ps_aliases_git.ps1 -Destination $scriptsPath
+    Copy-Item -Path .config/.assets/ps_aliases_git.ps1 -Destination $scriptsPath -Force
 }
 # kubectl functions
 if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
-    Copy-Item -Path .config/.assets/ps_aliases_kubectl.ps1 -Destination $scriptsPath
+    Copy-Item -Path .config/.assets/ps_aliases_kubectl.ps1 -Destination $scriptsPath -Force
     # add powershell kubectl autocompletion
     (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
+}
+# conda init
+$condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }
+if ((Test-Path $HOME/miniconda3/Scripts/conda.exe) -and -not $condaSet) {
+    Write-Host 'adding miniconda initialization...'
+    & "$HOME/miniconda3/Scripts/conda.exe" init powershell | Out-Null
 }
 
 # *PowerShell profile

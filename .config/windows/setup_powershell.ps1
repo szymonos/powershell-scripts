@@ -8,16 +8,16 @@ Available values: 'base', 'powerline'
 .PARAMETER PSModules
 List of PowerShell modules from ps-modules repository to be installed.
 .EXAMPLE
-$OmpTheme = 'none'
+.config/windows/setup_powershell.ps1
 $OmpTheme = 'powerline'
-.config/windows/setup_powershell.ps1 $OmpTheme
+.config/windows/setup_powershell.ps1 -t $OmpTheme
 $PSModules = 'do-common do-win'
-.config/windows/setup_powershell.ps1 $OmpTheme -m $PSModules
+.config/windows/setup_powershell.ps1 -m $PSModules
+.config/windows/setup_powershell.ps1 -m $PSModules -t $OmpTheme
 #>
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory, Position = 0)]
-    [ValidateSet('none', 'base', 'powerline')]
+    [Alias('t')]
     [string]$OmpTheme,
 
     [Alias('m')]
@@ -25,8 +25,6 @@ param (
 )
 
 begin {
-    # source common functions
-    . .include/ps_functions.ps1
     # set location to workspace folder
     $workspaceFolder = Split-Path (Split-Path $PSScriptRoot)
     if ($workspaceFolder -ne $PWD.Path) {
@@ -34,11 +32,13 @@ begin {
         Write-Verbose "Setting working directory to '$($workspaceFolder.Replace($HOME, '~'))'."
         Set-Location $workspaceFolder
     }
+    # source common functions
+    . .include/ps_functions.ps1
 }
 
 process {
     # *Install oh-my-posh
-    if ($OmpTheme -ne 'none') {
+    if ($OmpTheme) {
         .config/windows/scripts/install_omp.ps1
     }
 
@@ -47,11 +47,7 @@ process {
 
     # *Setup profile
     Update-SessionEnvironment
-    $param = @{ OmpTheme = $OmpTheme }
-    if ($PSModules) {
-        $param.PSModules = $PSModules
-    }
-    pwsh.exe -NoProfile .config/windows/scripts/setup_profile.ps1 @param
+    pwsh.exe -NoProfile .config/windows/scripts/setup_profile.ps1 @PSBoundParameters
 }
 
 end {

@@ -1,19 +1,27 @@
 #Requires -PSEdition Desktop
 <#
 .SYNOPSIS
-Script synopsis.
+Install the latest PowerShell, oh-my-posh if specified and setup profile on Windows.
+
 .PARAMETER OmpTheme
-Choose if oh-my-posh prompt theme should use base or powerline fonts.
-Available values: 'base', 'powerline'
+Specify oh-my-posh theme to be installed, from themes available on the page.
+There are also two baseline profiles included: base and powerline.
 .PARAMETER PSModules
 List of PowerShell modules from ps-modules repository to be installed.
+.PARAMETER UpdateModules
+Switch, whether to update installed PowerShell modules.
+
 .EXAMPLE
+$PSModules = 'do-common do-win'
+# ~set up PowerShell without oh-my-posh
 .config/windows/setup_powershell.ps1
+.config/windows/setup_powershell.ps1 -m $PSModules
+.config/windows/setup_powershell.ps1 -m $PSModules -UpdateModules
+# ~set up PowerShell with oh-my-posh
 $OmpTheme = 'powerline'
 .config/windows/setup_powershell.ps1 -t $OmpTheme
-$PSModules = 'do-common do-win'
-.config/windows/setup_powershell.ps1 -m $PSModules
-.config/windows/setup_powershell.ps1 -m $PSModules -t $OmpTheme
+.config/windows/setup_powershell.ps1 -t $OmpTheme -m $PSModules
+.config/windows/setup_powershell.ps1 -t $OmpTheme -m $PSModules -UpdateModules
 #>
 [CmdletBinding()]
 param (
@@ -21,7 +29,9 @@ param (
     [string]$OmpTheme,
 
     [Alias('m')]
-    [string]$PSModules
+    [string]$PSModules,
+
+    [switch]$UpdateModules
 )
 
 begin {
@@ -37,11 +47,6 @@ begin {
 }
 
 process {
-    # *Install oh-my-posh
-    if ($OmpTheme) {
-        .config/windows/scripts/install_omp.ps1
-    }
-
     # *Install PowerShell
     .config/windows/scripts/install_pwsh.ps1
 

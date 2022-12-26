@@ -1,7 +1,7 @@
 #Requires -PSEdition Desktop
 <#
 .SYNOPSIS
-Script synopsis.
+Delete PowerShell Core and oh-my-posh.
 .EXAMPLE
 .config/windows/clean_pwsh.ps1
 #>
@@ -15,7 +15,6 @@ if (Get-Command pwsh.exe -CommandType Application -ErrorAction SilentlyContinue)
     winget uninstall --id Microsoft.PowerShell --force
     # delete folders
     Remove-Item -Force -Recurse $profilePath
-    Remove-Item -Force -Recurse 'C:\Program Files\PowerShell'
 }
 
 # *Uninstall oh-my-posh

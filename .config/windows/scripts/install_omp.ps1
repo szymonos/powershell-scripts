@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Script synopsis.
+Install oh-my-posh using winget.
 .EXAMPLE
 .config/windows/scripts/install_omp.ps1
 #>

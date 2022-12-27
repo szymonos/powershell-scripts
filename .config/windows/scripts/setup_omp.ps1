@@ -28,9 +28,9 @@ begin {
 }
 
 process {
-    if (Test-Path ".config/.assets/$OmpTheme.omp.json" -PathType Leaf) {
+    if (Test-Path .config/.assets/omp_cfg/${OmpTheme}.omp.json -PathType Leaf) {
         # copy local theme
-        Copy-Item -Path ".config/.assets/$OmpTheme.omp.json" -Destination $ompProfile -Force
+        Copy-Item -Path .config/.assets/omp_cfg/${OmpTheme}.omp.json -Destination $ompProfile -Force
     } else {
         # download theme from GitHub
         [Net.WebClient]::new().DownloadFile("https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/${OmpTheme}.omp.json", $ompProfile)

@@ -12,9 +12,9 @@ $WarningPreference = 'Ignore'
 $CFG_PATH = '/tmp/config/pwsh_cfg'
 $SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
 # copy config files for WSL setup
-if (Test-Path .assets/config/pwsh_cfg -PathType Container) {
+if (Test-Path .config/.assets/pwsh_cfg -PathType Container) {
     New-Item $CFG_PATH -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
-    Copy-Item .assets/config/pwsh_cfg/* $CFG_PATH -Force
+    Copy-Item .config/.assets/pwsh_cfg/* $CFG_PATH -Force
 }
 
 # *Copy global profiles

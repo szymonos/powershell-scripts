@@ -3,8 +3,8 @@ function cd.. { Set-Location ../ }
 function .. { Set-Location ../ }
 function ... { Set-Location ../../ }
 function .... { Set-Location ../../../ }
-function src { . $PROFILE.CurrentUserAllHosts }
 function la { Get-ChildItem @args -Force }
+function src { . $PROFILE.CurrentUserAllHosts }
 
 # *Aliases
 Set-Alias -Name c -Value Clear-Host

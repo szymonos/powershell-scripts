@@ -12,9 +12,9 @@ $WarningPreference = 'Ignore'
 $CFG_PATH = '/tmp/config/pwsh_cfg'
 $SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
 # copy config files for WSL setup
-if (Test-Path .assets/config/pwsh_cfg -PathType Container) {
+if (Test-Path .config/.assets/pwsh_cfg -PathType Container) {
     New-Item $CFG_PATH -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
-    Copy-Item .assets/config/pwsh_cfg/* $CFG_PATH -Force
+    Copy-Item .config/.assets/pwsh_cfg/* $CFG_PATH -Force
 }
 
 # *Copy global profiles
@@ -24,6 +24,7 @@ if (Test-Path $CFG_PATH -PathType Container) {
     # PowerShell functions
     New-Item $SCRIPTS_PATH -ItemType Directory -ErrorAction SilentlyContinue | Out-Null
     Move-Item $CFG_PATH/ps_aliases_common.ps1 -Destination $SCRIPTS_PATH -Force
+    Move-Item $CFG_PATH/ps_aliases_linux.ps1 -Destination $SCRIPTS_PATH -Force
     # git functions
     if (Test-Path /usr/bin/git -PathType Leaf) {
         Move-Item $CFG_PATH/ps_aliases_git.ps1 -Destination $SCRIPTS_PATH -Force

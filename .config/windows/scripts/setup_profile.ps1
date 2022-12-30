@@ -60,24 +60,24 @@ process {
     if ($OmpTheme) {
         .config/windows/scripts/install_omp.ps1
         .config/windows/scripts/setup_omp.ps1 $OmpTheme
-        Copy-Item -Path .config/.assets/profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
+        Copy-Item -Path .config/.assets/pwsh_cfg/profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
     } else {
-        Copy-Item -Path .config/.assets/profile_win.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
+        Copy-Item -Path .config/.assets/pwsh_cfg/profile_win.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
     }
 
     # *PowerShell functions
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
     }
-    Copy-Item -Path .config/.assets/ps_aliases_common.ps1 -Destination $scriptsPath -Force
-    Copy-Item -Path .config/.assets/ps_aliases_win.ps1 -Destination $scriptsPath -Force
+    Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_common.ps1 -Destination $scriptsPath -Force
+    Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_win.ps1 -Destination $scriptsPath -Force
     # git functions
     if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        Copy-Item -Path .config/.assets/ps_aliases_git.ps1 -Destination $scriptsPath -Force
+        Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_git.ps1 -Destination $scriptsPath -Force
     }
     # kubectl functions
     if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        Copy-Item -Path .config/.assets/ps_aliases_kubectl.ps1 -Destination $scriptsPath -Force
+        Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_kubectl.ps1 -Destination $scriptsPath -Force
         # add powershell kubectl autocompletion
     (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
     }

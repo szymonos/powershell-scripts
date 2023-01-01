@@ -26,16 +26,12 @@ Set-PSReadLineKeyHandler -Key Ctrl+LeftArrow -Function BackwardWord
 Set-PSReadLineKeyHandler -Key Ctrl+RightArrow -Function ForwardWord
 Set-PSReadLineKeyHandler -Key Ctrl+v -Function Paste
 Set-PSReadLineKeyHandler -Key Alt+Delete -Function DeleteLine
-# set Startup Working Directory variable
-$SWD = $PWD.Path
-function cds { Set-Location $SWD }
 #endregion
 
 #region environment variables and aliases
 if ($IsWindows) {
     [Environment]::SetEnvironmentVariable('OMP_PATH', [IO.Path]::GetDirectoryName($PROFILE))
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine($env:OMP_PATH, 'Scripts'))
-
 } elseif ($IsLinux) {
     [Environment]::SetEnvironmentVariable('OMP_PATH', '/usr/local/share/oh-my-posh')
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', '/usr/local/share/powershell/Scripts')

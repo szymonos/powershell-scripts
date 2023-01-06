@@ -32,22 +32,34 @@ Set-PSReadLineKeyHandler -Key Alt+Delete -Function DeleteLine
 if ($IsWindows) {
     [Environment]::SetEnvironmentVariable('OMP_PATH', [IO.Path]::GetDirectoryName($PROFILE))
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine($env:OMP_PATH, 'Scripts'))
-} elseif ($IsLinux) {
+} else {
     [Environment]::SetEnvironmentVariable('OMP_PATH', '/usr/local/share/oh-my-posh')
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', '/usr/local/share/powershell/Scripts')
 }
 # $PATH variable
 @(
     [IO.Path]::Combine($HOME, '.local', 'bin')
+    [IO.Path]::Combine($HOME, '.cargo', 'bin')
+    [IO.Path]::Combine('/', 'usr', 'local', 'bin')
 ).ForEach{
     if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
         [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
     }
 }
-
 # aliases
-(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{
-    . $_.FullName
+(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{ . $_.FullName }
+#endregion
+
+# region brew
+if (-not $IsWindows) {
+    foreach ($path in @('/opt/homebrew/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew', "$HOME/.linuxbrew/bin/brew")) {
+        if (Test-Path $path) {
+            (& $path 'shellenv') | Out-String | Invoke-Expression
+            $env:HOMEBREW_NO_ENV_HINTS = 1
+            continue
+        }
+    }
+    Remove-Variable path
 }
 #endregion
 

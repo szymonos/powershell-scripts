@@ -48,7 +48,6 @@ begin {
 
     # set location to workspace folder
     Push-Location "$PSScriptRoot/../../.."
-
 }
 
 process {
@@ -75,7 +74,7 @@ process {
     if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
         Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_kubectl.ps1 -Destination $scriptsPath -Force
         # add powershell kubectl autocompletion
-    (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
+        (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
     }
 
     # *conda init

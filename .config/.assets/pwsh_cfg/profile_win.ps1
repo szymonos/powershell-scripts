@@ -55,11 +55,8 @@ function Format-Duration ([timespan]$TimeSpan) {
         [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
     }
 }
-
 # aliases
-(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{
-    . $_.FullName
-}
+(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter 'ps_aliases_*.ps1' -File).ForEach{ . $_.FullName }
 #endregion
 
 #region prompt
@@ -67,10 +64,11 @@ function Prompt {
     # get execution time of the last command
     $executionTime = (Get-History).Count -gt 0 ? (Format-Duration(Get-History)[-1].Duration) : $null
     # get prompt path
-    $promptPath = $PWD.Path.Replace($HOME, '~').Replace('Microsoft.PowerShell.Core\FileSystem::', '') -replace '\\$'
-    $split = $promptPath.Split([IO.Path]::DirectorySeparatorChar)
-    if ($split.Count -gt 3) {
-        $promptPath = [IO.Path]::Combine((($split[0] -eq '~') ? '~' : ($IsWindows ? "$($PWD.Drive.Name):" : $split[1])), '..', $split[-1])
+    $split = $($PWD.Path.Replace($HOME, '~').Replace('Microsoft.PowerShell.Core\FileSystem::', '') -replace '\\$').Split([IO.Path]::DirectorySeparatorChar, [StringSplitOptions]::RemoveEmptyEntries)
+    $promptPath = if ($split.Count -gt 3) {
+        [string]::Join('/', $split[0], '..', $split[-1])
+    } else {
+        [string]::Join('/', $split)
     }
     # run elevated indicator
     if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]'Administrator')) {

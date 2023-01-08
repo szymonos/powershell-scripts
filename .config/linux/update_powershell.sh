@@ -3,7 +3,7 @@
 .config/linux/update_powershell.sh
 '
 if [[ $EUID -eq 0 ]]; then
-  echo -e '\e[91mDo not run the script with sudo!\e[0m'
+  echo -e '\e[91mDo not run the script as root!\e[0m'
   exit 1
 fi
 

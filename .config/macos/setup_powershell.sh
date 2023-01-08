@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 : '
-.config/linux/setup_powershell.sh --theme powerline --ps_modules "do-common do-linux"
+.config/macos/setup_powershell.sh --theme powerline --ps_modules "do-common"
 '
 if [[ $EUID -eq 0 ]]; then
   echo -e '\e[91mDo not run the script as root!\e[0m'
@@ -22,12 +22,14 @@ done
 WORKSPACE_FOLDER=$(dirname "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")")
 [[ "$PWD" = "$WORKSPACE_FOLDER" ]] || cd "$WORKSPACE_FOLDER"
 
+echo -e "\e[32minstalling brew...\e[0m"
+.config/macos/scripts/install_brew.sh
 echo -e "\e[32minstalling pwsh packages...\e[0m"
-sudo .config/linux/scripts/install_omp.sh
-sudo .config/linux/scripts/install_pwsh.sh
+.config/macos/scripts/install_omp.sh
+.config/macos/scripts/install_pwsh.sh
 echo -e "\e[32msetting up profile for all users...\e[0m"
 sudo .config/linux/scripts/setup_omp.sh --theme $theme
-sudo .config/linux/scripts/setup_profile_allusers.ps1
+sudo .config/macos/scripts/setup_profile_allusers.ps1
 echo -e "\e[32msetting up profile for current user...\e[0m"
 .config/linux/scripts/setup_profile_user.ps1
 if [[ -n "$ps_modules" ]]; then
@@ -36,8 +38,8 @@ if [[ -n "$ps_modules" ]]; then
     git clone ${remote/powershell-scripts/ps-modules} ../ps-modules
   fi
   echo -e "\e[32minstalling PowerShell modules...\e[0m"
-  modules=($ps_modules)
-  for mod in ${modules[@]}; do
+  mods=($ps_modules)
+  for mod in ${mods[@]}; do
     if [ "$mod" = 'do-common' ]; then
       sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
     else

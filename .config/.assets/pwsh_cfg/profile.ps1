@@ -40,7 +40,7 @@ if ($IsWindows) {
 @(
     [IO.Path]::Combine($HOME, '.local', 'bin')
     [IO.Path]::Combine($HOME, '.cargo', 'bin')
-    [IO.Path]::Combine('/', 'usr', 'local', 'bin')
+    '/usr/local/bin'
 ).ForEach{
     if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
         [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
@@ -64,7 +64,18 @@ if (-not $IsWindows) {
 #endregion
 
 #region prompt
-if ((Get-Command oh-my-posh -ErrorAction SilentlyContinue) -and (Test-Path $env:OMP_PATH/theme.omp.json)) {
-    oh-my-posh --init --shell pwsh --config $env:OMP_PATH/theme.omp.json | Invoke-Expression
+try {
+    Get-Command oh-my-posh -CommandType Application -ErrorAction Stop | Out-Null
+    oh-my-posh --init --shell pwsh --config "$(Resolve-Path $env:OMP_PATH/theme.omp.json -ErrorAction Stop)" | Invoke-Expression
+} catch {
+    function Prompt {
+        $split = $($PWD.Path.Replace($HOME, '~').Replace('Microsoft.PowerShell.Core\FileSystem::', '') -replace '\\$').Split([IO.Path]::DirectorySeparatorChar, [StringSplitOptions]::RemoveEmptyEntries)
+        $promptPath = if ($split.Count -gt 3) {
+            [string]::Join('/', $split[0], '..', $split[-1])
+        } else {
+            [string]::Join('/', $split)
+        }
+        return "`e[1;32m{0}@{1}`e[0m: `e[1;34m$promptPath`e[0m> " -f ($env:USERNAME ?? $env:USER), ($env:COMPUTERNAME ?? $env:HOSTNAME ?? $env:WSL_DISTRO_NAME)
+    }
 }
 #endregion

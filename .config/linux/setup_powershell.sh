@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 : '
 .config/linux/setup_powershell.sh --theme powerline --ps_modules "do-common do-linux"
 '

@@ -23,6 +23,7 @@ WORKSPACE_FOLDER=$(dirname "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0
 [[ "$PWD" = "$WORKSPACE_FOLDER" ]] || cd "$WORKSPACE_FOLDER"
 
 echo -e "\e[32minstalling pwsh packages...\e[0m"
+sudo .config/linux/scripts/install_exa.sh
 sudo .config/linux/scripts/install_omp.sh
 sudo .config/linux/scripts/install_pwsh.sh
 echo -e "\e[32msetting up profile for all users...\e[0m"

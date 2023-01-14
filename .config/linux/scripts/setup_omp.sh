@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 : '
 sudo .config/linux/scripts/setup_omp.sh
 sudo .config/linux/scripts/setup_omp.sh --theme "powerline"

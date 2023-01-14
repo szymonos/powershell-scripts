@@ -25,6 +25,7 @@ WORKSPACE_FOLDER=$(dirname "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0
 echo -e "\e[32minstalling brew...\e[0m"
 .config/macos/scripts/install_brew.sh
 echo -e "\e[32minstalling pwsh packages...\e[0m"
+.config/macos/scripts/install_exa.sh
 .config/macos/scripts/install_omp.sh
 .config/macos/scripts/install_pwsh.sh
 echo -e "\e[32msetting up profile for all users...\e[0m"

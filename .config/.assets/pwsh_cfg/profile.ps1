@@ -52,9 +52,9 @@ if ($IsWindows) {
 
 # region brew
 if (-not $IsWindows) {
-    foreach ($path in @('/opt/homebrew/bin/brew', '/home/linuxbrew/.linuxbrew/bin/brew', "$HOME/.linuxbrew/bin/brew")) {
-        if (Test-Path $path) {
-            (& $path 'shellenv') | Out-String | Invoke-Expression
+    foreach ($path in @('/opt/homebrew', '/home/linuxbrew/.linuxbrew', "$HOME/.linuxbrew")) {
+        if (Test-Path $path/bin/brew -PathType Leaf) {
+            (& $path/bin/brew 'shellenv') | Out-String | Invoke-Expression
             $env:HOMEBREW_NO_ENV_HINTS = 1
             continue
         }

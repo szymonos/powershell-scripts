@@ -22,7 +22,7 @@ if (Test-Path $CFG_PATH/ps_aliases_macos.ps1) {
     $exa_git = try { exa --version | Select-String '+git' -SimpleMatch -Quiet } catch { $false }
     $exa_nerd = try { Select-String '\ue725' -Path /usr/local/share/oh-my-posh/theme.omp.json -SimpleMatch -Quiet } catch { $false }
     $exa_param = ($exa_git ? '--git ' : '') + ($exa_nerd ? '--icons ' : '')
-    [IO.File]::ReadAllLines("$CFG_PATH/ps_aliases_linux.ps1").Replace('exa -g ', "exa -g $exa_param") `
+    [IO.File]::ReadAllLines("$CFG_PATH/ps_aliases_macos.ps1").Replace('exa -g ', "exa -g $exa_param") `
     | Set-Content $CFG_PATH/ps_aliases_macos.ps1 -Encoding utf8
 }
 

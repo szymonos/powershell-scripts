@@ -20,7 +20,6 @@ begin {
 
     # set location to workspace folder
     Push-Location "$PSScriptRoot/../../.."
-
 }
 
 process {

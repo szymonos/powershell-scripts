@@ -14,10 +14,11 @@ Resolve main, dev, stage branch names.
 function Get-GitResolvedBranch ([string]$BranchName) {
     begin {
         $branchMatch = switch ($BranchName) {
-            '' { '(^|/)dev(|el|elop)$|(^|/)ma(in|ster)$' }
-            d { '(^|/)dev(|el|elop)$' }
+            '' { '(^|/)dev(|el|elop|elopment)$|(^|/)ma(in|ster)$|(^|/)trunk$' }
+            d { '(^|/)dev(|el|elop|elopment)$' }
             m { '(^|/)ma(in|ster)$' }
-            q { '(^|/)qa|stage$' }
+            s { '(^|/)stage$' }
+            t { '(^|/)trunk$' }
             Default { $BranchName }
         }
     }
@@ -123,7 +124,7 @@ function gca { Write-Host "git commit -v -a $args" -ForegroundColor Magenta; git
 function gca! { Write-Host "git commit -v -a --amend $args" -ForegroundColor Magenta; git commit -v -a --amend @args }
 function gcam { Write-Host "git commit -a -m $args" -ForegroundColor Magenta; git commit -a -m @args }
 function gcamp {
-    $head = gbc
+    $head = Get-GitCurrentBranch
     Write-Host "git commit -a -m $args && git push origin $head" -ForegroundColor Magenta
     git commit -a -m @args && git push origin $head
 }

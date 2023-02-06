@@ -6,33 +6,38 @@ This is PowerShell on Linux configuration guide, to provide a streamlined and co
 
 Profile, theme, and aliases/functions are being installed globally, so the configuration is preserved also when running as sudo.
 
-Datetime formatting is set to respect **ISO-8601**, if you prefer other settings, you can remove the following line from the [profile.ps1](.config/linux/config/profile.ps1):
+Datetime formatting is set to respect **ISO-8601**, if you prefer other settings, you can remove the following line from the [profile.ps1](../../.config/.assets/pwsh_cfg/profile.ps1):
 
 ``` PowerShell
 [Threading.Thread]::CurrentThread.CurrentCulture = 'en-SE'
 ```
 
-and remove `--time-style=long-iso` parameter from **ls** aliases/functions in the [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1) file.
+and remove `--time-style=long-iso` parameter from **ls** aliases/functions in the [ps_aliases_common.ps1](../../.config/.assets/pwsh_cfg/ps_aliases_linux.ps1) file.
 
 ## Installation
 
-All scripts are intended to be run from the repository root folder. To install and configure Linux on PowerShell, just run the command:
+All scripts are intended to be run from the repository root folder. To install and configure PowerShell on Linux, just run the command:
 
-``` shell
+``` sh
 .config/linux/setup_powershell.sh
 ```
 
-If you have PowerLine/Nerd fonts installed, you can run the script with parameter `pl`, for the _nicer_ command prompt:
+If you have PowerLine/Nerd fonts installed, you can run the script with `--theme` parameter, for the _nicer_ command prompt. There are two additional pre-created profiles in the repository: `powerline` and `nerd`, using powerline and nerd fonts accordingly, but you can also specify any oh-my-posh theme from [Themes | Oh My Posh](https://ohmyposh.dev/docs/themes) and the [setup_omp.sh](./scripts/setup_omp.sh) script will automatically download it and install.
 
-``` shell
-.config/linux/setup_powershell.sh pl
+``` sh
+# using pre-created profiles
+.config/linux/setup_powershell.sh --theme 'powerline'
+.config/linux/setup_powershell.sh --theme 'nerd'
+# examples of using oh-my-posh themes
+.config/linux/setup_powershell.sh --theme 'atomic'
+.config/linux/setup_powershell.sh --theme 'robbyrussell'
 ```
 
 ## Deinstallation
 
 You can remove all the resources installed with the above commands, by running:
 
-``` shell
+``` sh
 .config/linux/clean_pwsh.sh
 ```
 
@@ -40,28 +45,14 @@ You can remove all the resources installed with the above commands, by running:
 
 You can update `oh-my-posh`, `PowerShell`, and its modules, by running:
 
-``` shell
+``` sh
 .config/linux/update_powershell.sh
 ```
-
-## Hints
-
-One of the best features for the PS CLI experience is the PSReadLine **List PredictionView**. Included profile turns it on by default, but also sets convenient shortcuts for navigation, so you don't have to take off your hand to reach the arrows:
-
-- `Alt+j` - to select next element on the list
-- `Alt+k` - to select the previous element on the list
-
-### Other shortcuts
-
-- `Tab` - expands menu completion, you can navigate it with arrows
-- `F2` - switch between _List_*_ and _Inline_ prediction view
-- `Shift+Tab` - accept inline suggestion
 
 ## Caveats
 
 - **Aliases/Functions** - PowerShell treats aliases differently than bash - you cannot alias command with additional parameters - for this you need to create a function. It breaks autocompletion, so all _aliases_ defined in the function are not aware of the possible arguments. Another _issue_ is that you cannot create a function named the same as the _aliased_ command, for that you need to use env command like this:
-`function mv { & /usr/bin/env mv -iv $args }`.
 
-- **Invoke-Sudo** - this is a function, defined in [ps_aliases_common.ps1](.config/linux/config/ps_aliases_common.ps1), to run a command as sudo (aliased as sudo). The function has been created to persist existing aliases, and functions when running commands as sudo in PowerShell. It does work for oneliner functions and all aliases, but breaks when you pass quoted parameters with spaces, so e.g. command `sudo ls './one two/'` won't work.
-
-- **PowerShell Logo** - by default, when you run the `pwsh` command, it prints an _annoying_ logo. It is supposed to be changed in PowerShell v7.3, but as of now I recommend creating an alias `alias pwsh='pwsh -NoLogo'` in the bash profile, to prevent it when starting PowerShell.
+   ``` PowerShell
+   function ip { $input | & /usr/bin/env ip --color=auto @args }
+   ```

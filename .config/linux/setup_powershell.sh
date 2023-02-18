@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 : '
+# *default setup with oh-my-posh theme using baseline fonts
+.config/linux/setup_powershell.sh --ps_modules "do-common do-linux"
+# *setup with oh-my-posh theme using powerline fonts
 .config/linux/setup_powershell.sh --theme powerline --ps_modules "do-common do-linux"
+# *setup with oh-my-posh theme using nerd fonts
+.config/linux/setup_powershell.sh --theme nerd --ps_modules "do-common do-linux"
+# *you can specify any themes from https://ohmyposh.dev/docs/themes/ (e.g. atomic)
+.config/linux/setup_powershell.sh --theme atomic --ps_modules "do-common do-linux"
 '
 if [[ $EUID -eq 0 ]]; then
   echo -e '\e[91mDo not run the script as root!\e[0m'

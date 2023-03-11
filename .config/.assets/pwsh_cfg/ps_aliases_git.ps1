@@ -206,6 +206,7 @@ function grup { Write-Host "git remote update origin $args" -ForegroundColor Mag
 function grupp { Write-Host "git remote update origin --prune $args" -ForegroundColor Magenta; git remote update origin --prune @args }
 function grv { Write-Host "git remote -v $args" -ForegroundColor Magenta; git remote -v @args }
 function gs { (Get-GitResolvedBranch "$args").ForEach({ Write-Host "git switch $_" -ForegroundColor Magenta; git switch $_ }) }
+function gs! { (Get-GitResolvedBranch "$args").ForEach({ Write-Host "git switch $_ --force" -ForegroundColor Magenta; git switch $_ --force }) }
 function gsb { Write-Host "git status -sb $args" -ForegroundColor Magenta; git status -sb @args }
 function gsd { Write-Host "git svn dcommit $args" -ForegroundColor Magenta; git svn dcommit @args }
 function gsi { Write-Host "git submodule init $args" -ForegroundColor Magenta; git submodule init @args }

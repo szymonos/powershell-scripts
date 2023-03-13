@@ -11,6 +11,9 @@ $WarningPreference = 'Ignore'
 if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
     Write-Host 'setting PSGallery trusted...'
     Set-PSResourceRepository -Name PSGallery -Trusted
+    # Update help, assuming this is the initial setup.
+    Write-Host 'updating help...'
+    Update-Help
 }
 
 $kubectlSet = try { Select-String '__kubectl_debug' -Path $PROFILE -Quiet } catch { $false }

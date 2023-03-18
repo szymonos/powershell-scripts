@@ -4,6 +4,8 @@ Install PowerShell Core using winget.
 .EXAMPLE
 .config/windows/scripts/install_pwsh.ps1
 #>
+$ErrorActionPreference = 'Stop'
+
 $app = 'pwsh'
 
 $rel = Invoke-CommandRetry -Verbose {

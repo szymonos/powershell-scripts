@@ -4,6 +4,8 @@ Install oh-my-posh using winget.
 .EXAMPLE
 .config/windows/scripts/install_omp.ps1
 #>
+$ErrorActionPreference = 'Stop'
+
 $app = 'oh-my-posh'
 
 $rel = Invoke-CommandRetry -Verbose {

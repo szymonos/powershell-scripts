@@ -4,8 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # ignored folders
-/.tmp/
 /.private/
+/.tmp/
+/console/
 
 # User-specific files
 *.rsuser

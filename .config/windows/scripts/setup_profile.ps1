@@ -76,6 +76,8 @@ process {
         # add powershell kubectl autocompletion
         (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
     }
+    # TODO to be removed, cleanup legacy aliases
+    Get-ChildItem -Path $scriptsPath -Filter 'ps_aliases_*.ps1' -File | Remove-Item -Force
 
     # *conda init
     $condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }

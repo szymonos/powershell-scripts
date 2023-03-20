@@ -88,7 +88,7 @@ process {
 
     # *update installed modules
     if ($UpdateModules) {
-        .include/manage_psmodules.ps1
+        .config/windows/scripts/update_psresources.ps1
     }
 
     # *install modules

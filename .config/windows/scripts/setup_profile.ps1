@@ -82,7 +82,7 @@ process {
     # *conda init
     $condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }
     if ((Test-Path $HOME/miniconda3/Scripts/conda.exe) -and -not $condaSet) {
-        Write-Host 'adding miniconda initialization...'
+        Write-Verbose 'adding miniconda initialization...'
         & "$HOME/miniconda3/Scripts/conda.exe" init powershell | Out-Null
     }
 

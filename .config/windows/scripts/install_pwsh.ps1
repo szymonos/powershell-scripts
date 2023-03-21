@@ -8,9 +8,11 @@ $ErrorActionPreference = 'Stop'
 
 $app = 'pwsh'
 
-$rel = Invoke-CommandRetry -Verbose {
-    (Invoke-RestMethod 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest').tag_name -replace '^v'
-}
+$retryCount = 0
+do {
+    $rel = (Invoke-RestMethod 'https://api.github.com/repos/PowerShell/PowerShell/releases/latest').tag_name -replace '^v'
+    $retryCount++
+} until ($rel -or $retryCount -eq 10)
 
 if (Get-Command pwsh.exe -CommandType Application -ErrorAction SilentlyContinue) {
     $ver = pwsh.exe -nop -c '$PSVersionTable.PSVersion.ToString()'

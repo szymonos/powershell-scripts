@@ -64,29 +64,31 @@ process {
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
     }
-    Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_common.ps1 -Destination $scriptsPath -Force
-    Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_win.ps1 -Destination $scriptsPath -Force
+    Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_common.ps1 -Destination $scriptsPath -Force
+    Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_win.ps1 -Destination $scriptsPath -Force
     # git functions
     if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_git.ps1 -Destination $scriptsPath -Force
+        Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_git.ps1 -Destination $scriptsPath -Force
     }
     # kubectl functions
     if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        Copy-Item -Path .config/.assets/pwsh_cfg/ps_aliases_kubectl.ps1 -Destination $scriptsPath -Force
+        Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_kubectl.ps1 -Destination $scriptsPath -Force
         # add powershell kubectl autocompletion
         (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
     }
+    # TODO to be removed, cleanup legacy aliases
+    Get-ChildItem -Path $scriptsPath -Filter 'ps_aliases_*.ps1' -File | Remove-Item -Force
 
     # *conda init
     $condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }
     if ((Test-Path $HOME/miniconda3/Scripts/conda.exe) -and -not $condaSet) {
-        Write-Host 'adding miniconda initialization...'
+        Write-Verbose 'adding miniconda initialization...'
         & "$HOME/miniconda3/Scripts/conda.exe" init powershell | Out-Null
     }
 
     # *update installed modules
     if ($UpdateModules) {
-        .include/manage_psmodules.ps1
+        .config/windows/scripts/update_psresources.ps1
     }
 
     # *install modules

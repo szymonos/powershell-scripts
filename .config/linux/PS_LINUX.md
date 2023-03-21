@@ -12,7 +12,7 @@ Datetime formatting is set to respect **ISO-8601**, if you prefer other settings
 [Threading.Thread]::CurrentThread.CurrentCulture = 'en-SE'
 ```
 
-and remove `--time-style=long-iso` parameter from **ls** aliases/functions in the [ps_aliases_common.ps1](../../.config/.assets/pwsh_cfg/ps_aliases_linux.ps1) file.
+and remove `--time-style=long-iso` parameter from **ls** aliases/functions in the [_aliases_common.ps1](../../.config/.assets/pwsh_cfg/_aliases_linux.ps1) file.
 
 ## Installation
 

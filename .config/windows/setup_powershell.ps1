@@ -12,7 +12,7 @@ List of PowerShell modules from ps-modules repository to be installed.
 Switch, whether to update installed PowerShell modules.
 
 .EXAMPLE
-$PSModules = 'do-common do-win'
+$PSModules = @('do-common', 'do-win')
 # ~set up PowerShell without oh-my-posh
 .config/windows/setup_powershell.ps1
 .config/windows/setup_powershell.ps1 -m $PSModules
@@ -29,7 +29,7 @@ param (
     [string]$OmpTheme,
 
     [Alias('m')]
-    [string]$PSModules,
+    [string[]]$PSModules,
 
     [switch]$UpdateModules
 )
@@ -43,6 +43,7 @@ begin {
 
 process {
     # *Install PowerShell
+    Write-Host 'installing pwsh...' -ForegroundColor Cyan
     .config/windows/scripts/install_pwsh.ps1
 
     # *Setup profile

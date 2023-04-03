@@ -12,7 +12,7 @@ List of PowerShell modules from ps-modules repository to be installed.
 Switch, whether to update installed PowerShell modules.
 
 .EXAMPLE
-$PSModules = 'do-common do-win'
+$PSModules = @('do-common', 'do-win')
 # ~set up PowerShell without oh-my-posh
 .config/windows/scripts/setup_profile.ps1
 .config/windows/scripts/setup_profile.ps1 -m $PSModules
@@ -29,7 +29,7 @@ param (
     [string]$OmpTheme,
 
     [Alias('m')]
-    [string]$PSModules,
+    [string[]]$PSModules,
 
     [switch]$UpdateModules
 )
@@ -53,6 +53,7 @@ begin {
 process {
     # *PowerShell profile
     if ($OmpTheme) {
+        Write-Host 'installing omp...' -ForegroundColor Cyan
         .config/windows/scripts/install_omp.ps1
         .config/windows/scripts/setup_omp.ps1 $OmpTheme
         Copy-Item -Path .config/.assets/pwsh_cfg/profile.ps1 -Destination $PROFILE.CurrentUserAllHosts -Force
@@ -61,9 +62,11 @@ process {
     }
 
     # *PowerShell functions
+    Write-Host 'setting up profile...' -ForegroundColor Cyan
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
     }
+    Write-Host 'copying aliases...' -ForegroundColor DarkGreen
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_common.ps1 -Destination $scriptsPath -Force
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_win.ps1 -Destination $scriptsPath -Force
     # git functions
@@ -107,12 +110,23 @@ process {
 
     # *ps-modules
     if ($PSModules) {
-        if (-not (Test-Path '../ps-modules' -PathType Container)) {
-            # clone ps-modules repository if not exists
-            $remote = (git config --get remote.origin.url).Replace('powershell-scripts', 'ps-modules')
+        Write-Host 'installing ps-modules...' -ForegroundColor Cyan
+        $getOrigin = { git config --get remote.origin.url }
+        $remote = (Invoke-Command $getOrigin).Replace('powershell-scripts', 'ps-modules')
+        try {
+            Push-Location '../ps-modules'
+            if ($(Invoke-Command $getOrigin) -eq $remote) {
+                # pull ps-modules repository
+                git reset --hard --quiet && git clean --force -d && git pull --quiet
+            } else {
+                $PSModules = @()
+            }
+            Pop-Location
+        } catch {
+            # clone ps-modules repository
             git clone $remote ../ps-modules
         }
-        $PSModules.Split() | ../ps-modules/module_manage.ps1 -CleanUp -Verbose
+        $PSModules | ../ps-modules/module_manage.ps1 -CleanUp -Verbose -ErrorAction SilentlyContinue
     }
 }
 

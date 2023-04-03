@@ -18,13 +18,12 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-# correct script working directory if needed
-WORKSPACE_FOLDER=$(dirname "$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")")
-[[ "$PWD" = "$WORKSPACE_FOLDER" ]] || cd "$WORKSPACE_FOLDER"
+# set script working directory to workspace folder
+SCRIPT_ROOT=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+pushd "$(readlink -f "${SCRIPT_ROOT}/../../")" >/dev/null
 
-printf "\e[96minstalling brew...\e[0m\n"
-.config/macos/scripts/install_brew.sh
-printf "\e[96minstalling pwsh packages...\e[0m\n"
+printf "\e[96minstalling packages...\e[0m\n"
+.config/macos/scripts/install_brew.sh >/dev/null
 .config/macos/scripts/install_exa.sh
 .config/macos/scripts/install_omp.sh
 .config/macos/scripts/install_pwsh.sh
@@ -34,13 +33,24 @@ sudo .config/macos/scripts/setup_profile_allusers.ps1
 printf "\e[96msetting up profile for current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 if [[ -n "$ps_modules" ]]; then
-  if [ ! -d ../ps-modules ]; then
-    remote=$(git config --get remote.origin.url)
-    git clone ${remote/powershell-scripts/ps-modules} ../ps-modules
+  printf "\e[96minstalling ps-modules...\e[0m\n"
+  get_origin="git config --get remote.origin.url"
+  origin=$(eval $get_origin)
+  remote=${origin/powershell-scripts/ps-modules}
+  if [ -d ../ps-modules ]; then
+    pushd ../ps-modules >/dev/null
+    if [ "$(eval $get_origin)" = "$remote" ]; then
+      git reset --hard --quiet && git clean --force -d && git pull --quiet
+    else
+      ps_modules=''
+    fi
+    popd >/dev/null
+  else
+    git clone $remote ../ps-modules
   fi
-  printf "\e[96minstalling PowerShell modules...\e[0m\n"
-  mods=($ps_modules)
-  for mod in ${mods[@]}; do
+  modules=($ps_modules)
+  for mod in ${modules[@]}; do
+    echo -e "\e[32m$mod\e[0m" >&2
     if [ "$mod" = 'do-common' ]; then
       sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
     else
@@ -48,3 +58,6 @@ if [[ -n "$ps_modules" ]]; then
     fi
   done
 fi
+
+# restore working directory
+popd >/dev/null

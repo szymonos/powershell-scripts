@@ -38,31 +38,38 @@ sudo .config/linux/scripts/setup_omp.sh --theme $theme
 sudo .config/linux/scripts/setup_profile_allusers.ps1
 echo -e "\e[96msetting up profile for current user...\e[0m"
 .config/linux/scripts/setup_profile_user.ps1
-if [[ -n "$ps_modules" ]]; then
-  echo -e "\e[96minstalling ps-modules...\e[0m"
-  get_origin="git config --get remote.origin.url"
-  origin=$(eval $get_origin)
-  remote=${origin/powershell-scripts/ps-modules}
-  if [ -d ../ps-modules ]; then
-    pushd ../ps-modules >/dev/null
-    if [ "$(eval $get_origin)" = "$remote" ]; then
-      git reset --hard --quiet && git clean --force -d && git pull --quiet
-    else
-      ps_modules=''
-    fi
-    popd >/dev/null
-  else
-    git clone $remote ../ps-modules
-  fi
+# install powershell modules
+if [ -f /usr/bin/pwsh ]; then
   modules=($ps_modules)
-  for mod in ${modules[@]}; do
-    echo -e "\e[32m$mod\e[0m" >&2
-    if [ "$mod" = 'do-common' ]; then
-      sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
+  [ -f /usr/bin/git ] && modules+=(aliases-git) || true
+  [ -f /usr/bin/kubectl ] && modules+=(aliases-kubectl) || true
+  if [[ -n $modules ]]; then
+    echo -e "\e[96minstalling ps-modules...\e[0m"
+    # determine if ps-modules repository exist and clone if necessary
+    get_origin="git config --get remote.origin.url"
+    origin=$(eval $get_origin)
+    remote=${origin/vagrant-scripts/ps-modules}
+    if [ -d ../ps-modules ]; then
+      pushd ../ps-modules >/dev/null
+      if [ "$(eval $get_origin)" = "$remote" ]; then
+        git reset --hard --quiet && git clean --force -d && git pull --quiet
+      else
+        modules=()
+      fi
+      popd >/dev/null
     else
-      ../ps-modules/module_manage.ps1 "$mod" -CleanUp
+      git clone $remote ../ps-modules
     fi
-  done
+    # install modules
+    for mod in ${modules[@]}; do
+      echo -e "\e[32m$mod\e[0m" >&2
+      if [ "$mod" = 'do-common' ]; then
+        sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
+      else
+        ../ps-modules/module_manage.ps1 "$mod" -CleanUp
+      fi
+    done
+  fi
 fi
 
 # restore working directory

@@ -63,24 +63,14 @@ process {
 
     # *PowerShell functions
     Write-Host 'setting up profile...' -ForegroundColor Cyan
+    # TODO to be removed, cleanup legacy aliases
+    Get-ChildItem -Path $scriptsPath -Filter '*_aliases_*.ps1' -File | Remove-Item -Force
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
     }
     Write-Host 'copying aliases...' -ForegroundColor DarkGreen
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_common.ps1 -Destination $scriptsPath -Force
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_win.ps1 -Destination $scriptsPath -Force
-    # git functions
-    if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_git.ps1 -Destination $scriptsPath -Force
-    }
-    # kubectl functions
-    if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_kubectl.ps1 -Destination $scriptsPath -Force
-        # add powershell kubectl autocompletion
-        (kubectl.exe completion powershell).Replace("''kubectl''", "''k''") | Set-Content $PROFILE
-    }
-    # TODO to be removed, cleanup legacy aliases
-    Get-ChildItem -Path $scriptsPath -Filter 'ps_aliases_*.ps1' -File | Remove-Item -Force
 
     # *conda init
     $condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }
@@ -109,8 +99,19 @@ process {
     }
 
     # *ps-modules
-    if ($PSModules) {
+    $moduleList = [Collections.Generic.List[string]]::new()
+    $PSModules.ForEach({ $moduleList.Add($_) })
+    if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
+        $moduleList.Add('aliases-git')
+    }
+    if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
+        $moduleList.Add('aliases-kubectl')
+        # set powershell kubectl autocompletion
+        [IO.File]::WriteAllText($PROFILE, (kubectl.exe completion powershell).Replace("''kubectl''", "''k''"))
+    }
+    if ($moduleList) {
         Write-Host 'installing ps-modules...' -ForegroundColor Cyan
+        # determine if ps-modules repository exist and clone if necessary
         $getOrigin = { git config --get remote.origin.url }
         $remote = (Invoke-Command $getOrigin).Replace('powershell-scripts', 'ps-modules')
         try {
@@ -119,14 +120,14 @@ process {
                 # pull ps-modules repository
                 git reset --hard --quiet && git clean --force -d && git pull --quiet
             } else {
-                $PSModules = @()
+                $moduleList = [Collections.Generic.List[string]]::new()
             }
             Pop-Location
         } catch {
             # clone ps-modules repository
             git clone $remote ../ps-modules
         }
-        $PSModules | ../ps-modules/module_manage.ps1 -CleanUp -Verbose -ErrorAction SilentlyContinue
+        $moduleList | ../ps-modules/module_manage.ps1 -CleanUp -Verbose -ErrorAction SilentlyContinue
     }
 }
 

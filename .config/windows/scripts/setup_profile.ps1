@@ -64,6 +64,9 @@ process {
     # *PowerShell functions
     Write-Host 'setting up profile...' -ForegroundColor Cyan
     # TODO to be removed, cleanup legacy aliases
+    if (-not (Test-Path $scriptsPath)) {
+        New-Item $scriptsPath -ItemType Directory | Out-Null
+    }
     Get-ChildItem -Path $scriptsPath -Filter '*_aliases_*.ps1' -File | Remove-Item -Force
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null

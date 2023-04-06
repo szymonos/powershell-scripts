@@ -8,12 +8,14 @@ sudo .config/macos/scripts/setup_profile_allusers.ps1
 $WarningPreference = 'Ignore'
 
 # path variables
-$CFG_PATH = '/tmp/config/pwsh_cfg'
+$user = $(id -un 1000)
+$CFG_PATH = "/home/$user/tmp/config/pwsh_cfg"
 $SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
 # copy config files for WSL setup
 if (Test-Path .config/.assets/pwsh_cfg -PathType Container) {
     if (-not (Test-Path $CFG_PATH)) {
         New-Item $CFG_PATH -ItemType Directory | Out-Null
+        chown -R ${user}:${user} /home/$user/tmp
     }
     Copy-Item .config/.assets/pwsh_cfg/* $CFG_PATH -Force
 }
@@ -28,6 +30,9 @@ if (Test-Path $CFG_PATH/_aliases_macos.ps1) {
 
 # *Copy global profiles
 if (Test-Path $CFG_PATH -PathType Container) {
+    if (-not (Test-Path $SCRIPTS_PATH)) {
+        New-Item $SCRIPTS_PATH -ItemType Directory | Out-Null
+    }
     # TODO to be removed, cleanup legacy aliases
     Get-ChildItem -Path $SCRIPTS_PATH -Filter '*_aliases_*.ps1' -File | Remove-Item -Force
     # PowerShell profile
@@ -39,7 +44,7 @@ if (Test-Path $CFG_PATH -PathType Container) {
     install -o root -g root -m 0644 $CFG_PATH/_aliases_common.ps1 $SCRIPTS_PATH
     install -o root -g root -m 0644 $CFG_PATH/_aliases_macos.ps1 $SCRIPTS_PATH
     # clean config folder
-    Remove-Item $CFG_PATH -Recurse -Force
+    Remove-Item (Split-Path $CFG_PATH) -Recurse -Force
 }
 
 # *PowerShell profile
@@ -56,4 +61,6 @@ for ($i = 0; -not (Get-Module posh-git -ListAvailable) -and $i -lt 10; $i++) {
     Install-PSResource -Name posh-git -Scope AllUsers
 }
 # update existing modules
-.config/macos/scripts/update_psresources.ps1
+if (Test-Path .config/macos/scripts/update_psresources.ps1 -PathType Leaf) {
+    .config/macos/scripts/update_psresources.ps1
+}

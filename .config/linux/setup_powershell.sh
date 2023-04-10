@@ -9,7 +9,7 @@
 # *you can specify any themes from https://ohmyposh.dev/docs/themes/ (e.g. atomic)
 .config/linux/setup_powershell.sh --theme atomic --ps_modules "do-common do-linux"
 '
-if [[ $EUID -eq 0 ]]; then
+if [ $EUID -eq 0 ]; then
   echo -e '\e[91mDo not run the script as root!\e[0m'
   exit 1
 fi
@@ -43,7 +43,7 @@ if [ -f /usr/bin/pwsh ]; then
   modules=($ps_modules)
   [ -f /usr/bin/git ] && modules+=(aliases-git) || true
   [ -f /usr/bin/kubectl ] && modules+=(aliases-kubectl) || true
-  if [[ -n $modules ]]; then
+  if [ -n "$modules" ]; then
     echo -e "\e[96minstalling ps-modules...\e[0m"
     # determine if ps-modules repository exist and clone if necessary
     get_origin="git config --get remote.origin.url"

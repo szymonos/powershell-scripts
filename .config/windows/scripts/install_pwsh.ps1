@@ -1,6 +1,7 @@
+#Requires -PSEdition Desktop
 <#
 .SYNOPSIS
-Install PowerShell Core using winget.
+Install PowerShell Core.
 .EXAMPLE
 .config/windows/scripts/install_pwsh.ps1
 #>
@@ -19,9 +20,18 @@ if (Get-Command pwsh.exe -CommandType Application -ErrorAction SilentlyContinue)
     if ($rel -eq $ver) {
         Write-Host "$app v$ver is already latest"
         exit 0
-    } else {
-        winget.exe upgrade --id Microsoft.PowerShell
     }
-} else {
-    winget.exe install --id Microsoft.PowerShell
 }
+
+if ($pwshp = Get-Process pwsh) {
+    $msg = 'Do you want to terminate existing pwsh process(es)? [y/N]'
+    if ((Read-Host -Prompt $msg) -eq 'y') {
+        $pwshp | Stop-Process -Force
+    } else {
+        Write-Host "PowerShell v$rel installation cancelled."
+        exit 0
+    }
+}
+
+# install latest PowerShell version
+Invoke-Expression "& { $(Invoke-RestMethod https://aka.ms/install-powershell.ps1) } -UseMSI"

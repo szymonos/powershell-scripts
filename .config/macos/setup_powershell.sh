@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 : '
-.config/macos/setup_powershell.sh --theme nerd --ps_modules "do-common do-linux"
+# :default setup without setting oh-my-posh theme
+.config/macos/setup_powershell.sh
+# :setup with oh-my-posh theme using base fonts
+.config/macos/setup_powershell.sh --omp_theme base
+# :setup with oh-my-posh theme using powerline fonts
+.config/macos/setup_powershell.sh --omp_theme powerline
+# :setup with oh-my-posh theme using nerd fonts
+.config/macos/setup_powershell.sh --omp_theme nerd
+# :you can specify any themes from https://ohmyposh.dev/docs/themes/ (e.g. atomic)
+.config/macos/setup_powershell.sh --omp_theme atomic
 '
 if [ $EUID -eq 0 ]; then
   printf '\e[91mDo not run the script as root!\e[0m\n'
@@ -8,8 +17,8 @@ if [ $EUID -eq 0 ]; then
 fi
 
 # parse named parameters
-theme=${theme:-base}
-ps_modules=${ps_modules}
+omp_theme=${omp_theme}
+ps_modules=${ps_modules:-'do-common do-linux'}
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     param="${1/--/}"
@@ -22,15 +31,20 @@ done
 SCRIPT_ROOT=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 pushd "$(readlink -f "${SCRIPT_ROOT}/../../")" >/dev/null
 
+if [[ -n "$omp_theme" || -f /usr/bin/oh-my-posh ]]; then
+  printf "\e[96minstalling oh-my-posh...\e[0m\n"
+  .config/macos/scripts/install_omp.sh
+  if [ -n "$omp_theme" ]; then
+    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme
+  fi
+fi
 printf "\e[96minstalling packages...\e[0m\n"
 .config/macos/scripts/install_brew.sh >/dev/null
 .config/macos/scripts/install_exa.sh
-.config/macos/scripts/install_omp.sh
 .config/macos/scripts/install_pwsh.sh
 printf "\e[96msetting up profile for all users...\e[0m\n"
-sudo .config/linux/scripts/setup_omp.sh --theme $theme
 sudo .config/macos/scripts/setup_profile_allusers.ps1
-printf "\e[96msetting up profile for current user...\e[0m\n"
+printf "\e[96msetting up profile for the current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules
 if [ -f /usr/bin/pwsh ]; then

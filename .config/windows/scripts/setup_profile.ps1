@@ -71,7 +71,7 @@ process {
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
     }
-    Write-Host 'copying aliases...' -ForegroundColor DarkGreen
+    Write-Host 'copying aliases' -ForegroundColor DarkGreen
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_common.ps1 -Destination $scriptsPath -Force
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_win.ps1 -Destination $scriptsPath -Force
 

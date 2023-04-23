@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 : '
-# *default setup with oh-my-posh theme using baseline fonts
-.config/linux/setup_powershell.sh --ps_modules "do-common do-linux"
-# *setup with oh-my-posh theme using powerline fonts
-.config/linux/setup_powershell.sh --theme powerline --ps_modules "do-common do-linux"
-# *setup with oh-my-posh theme using nerd fonts
-.config/linux/setup_powershell.sh --theme nerd --ps_modules "do-common do-linux"
-# *you can specify any themes from https://ohmyposh.dev/docs/themes/ (e.g. atomic)
-.config/linux/setup_powershell.sh --theme atomic --ps_modules "do-common do-linux"
+# :default setup without setting oh-my-posh theme
+.config/linux/setup_powershell.sh
+# :setup with oh-my-posh theme using base fonts
+.config/linux/setup_powershell.sh --omp_theme base
+# :setup with oh-my-posh theme using powerline fonts
+.config/linux/setup_powershell.sh --omp_theme powerline
+# :setup with oh-my-posh theme using nerd fonts
+.config/linux/setup_powershell.sh --omp_theme nerd
+# :you can specify any themes from https://ohmyposh.dev/docs/themes/ (e.g. atomic)
+.config/linux/setup_powershell.sh --omp_theme atomic
 '
 if [ $EUID -eq 0 ]; then
   echo -e '\e[91mDo not run the script as root!\e[0m'
@@ -15,8 +17,8 @@ if [ $EUID -eq 0 ]; then
 fi
 
 # parse named parameters
-theme=${theme:-base}
-ps_modules=${ps_modules}
+omp_theme=${omp_theme}
+ps_modules=${ps_modules:-'do-common do-linux'}
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     param="${1/--/}"
@@ -29,14 +31,19 @@ done
 SCRIPT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)
 pushd "$(cd "${SCRIPT_ROOT}/../../" && pwd)" >/dev/null
 
+if [[ -n "$omp_theme" || -f /usr/bin/oh-my-posh ]]; then
+  echo -e "\e[96minstalling oh-my-posh...\e[0m"
+  sudo .config/linux/scripts/install_omp.sh >/dev/null
+  if [ -n "$omp_theme" ]; then
+    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme
+  fi
+fi
 echo -e "\e[96minstalling packages...\e[0m"
 sudo .config/linux/scripts/install_exa.sh >/dev/null
-sudo .config/linux/scripts/install_omp.sh >/dev/null
 sudo .config/linux/scripts/install_pwsh.sh >/dev/null
 echo -e "\e[96msetting up profile for all users...\e[0m"
-sudo .config/linux/scripts/setup_omp.sh --theme $theme
 sudo .config/linux/scripts/setup_profile_allusers.ps1
-echo -e "\e[96msetting up profile for current user...\e[0m"
+echo -e "\e[96msetting up profile for the current user...\e[0m"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules
 if [ -f /usr/bin/pwsh ]; then

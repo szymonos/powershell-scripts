@@ -71,7 +71,7 @@ process {
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
     }
-    Write-Host 'copying aliases...' -ForegroundColor DarkGreen
+    Write-Host 'copying aliases' -ForegroundColor DarkGreen
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_common.ps1 -Destination $scriptsPath -Force
     Copy-Item -Path .config/.assets/pwsh_cfg/_aliases_win.ps1 -Destination $scriptsPath -Force
 
@@ -102,17 +102,18 @@ process {
     }
 
     # *ps-modules
-    $moduleList = [Collections.Generic.List[string]]::new()
-    $PSModules.ForEach({ $moduleList.Add($_) })
-    if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        $moduleList.Add('aliases-git')
-    }
-    if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        $moduleList.Add('aliases-kubectl')
+    $modules = @(
+        $PSModules
+        (Get-Module -ListAvailable Az) ? 'do-az' : $null
+        (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) ? 'aliases-git' : $null
+        (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) ? 'aliases-kubectl' : $null
+    ).Where({ $_ }) | Select-Object -Unique
+
+    if ('aliases-kubectl' -in $modules) {
         # set powershell kubectl autocompletion
         [IO.File]::WriteAllText($PROFILE, (kubectl.exe completion powershell).Replace("''kubectl''", "''k''"))
     }
-    if ($moduleList) {
+    if ($modules) {
         Write-Host 'installing ps-modules...' -ForegroundColor Cyan
         # determine if ps-modules repository exist and clone if necessary
         $getOrigin = { git config --get remote.origin.url }
@@ -123,14 +124,17 @@ process {
                 # pull ps-modules repository
                 git reset --hard --quiet && git clean --force -d && git pull --quiet
             } else {
-                $moduleList = [Collections.Generic.List[string]]::new()
+                $modules = @()
             }
             Pop-Location
         } catch {
             # clone ps-modules repository
             git clone $remote ../ps-modules
         }
-        $moduleList | ../ps-modules/module_manage.ps1 -CleanUp -Verbose -ErrorAction SilentlyContinue
+        if ($modules) {
+            Write-Host "$modules" -ForegroundColor DarkGreen
+            $modules | ../ps-modules/module_manage.ps1 -CleanUp -Verbose -ErrorAction SilentlyContinue
+        }
     }
 }
 

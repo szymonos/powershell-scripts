@@ -1,11 +1,12 @@
-$ErrorActionPreference = 'Stop'
-
+#Requires -PSEdition Desktop
 <#
 .SYNOPSIS
 Retry executing command if fails on HttpRequestException.
 .PARAMETER Script
 Script block of commands to execute.
 #>
+$ErrorActionPreference = 'Stop'
+
 function Invoke-CommandRetry {
     [CmdletBinding()]
     param (
@@ -52,66 +53,18 @@ function Invoke-CommandRetry {
 
 <#
 .SYNOPSIS
-Check if PowerShell runs elevated.
-#>
-function Test-IsAdmin {
-    [CmdletBinding()]
-    [OutputType([bool])]
-    param ()
-
-    process {
-        $isAdmin = if ($IsWindows -or $PSVersionTable.PSEdition -eq 'Desktop') {
-            ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
-        } else {
-            if ((id -u) -eq 0) { $true } else { $false }
-        }
-    }
-
-    end {
-        return $isAdmin
-    }
-}
-
-if ($PSVersionTable.PSEdition -eq 'Desktop') {
-    function Join-String {
-        <#
-        .SYNOPSIS
-        Join strings from pipeline.
-        #>
-        [CmdletBinding()]
-        [OutputType([string])]
-        param (
-            [Parameter(Mandatory, ValueFromPipeline)]
-            [string[]]${InputObject},
-
-            [Parameter(Position = 0)]
-            [ValidateNotNullorEmpty()]
-            [string]$Separator = ','
-        )
-        begin {
-            $temp = [Collections.Generic.List[string]]::new()
-        }
-        process {
-            $InputObject.ForEach({ $temp.Add($_) })
-        }
-        end {
-            $temp -join $Separator
-        }
-    }
-}
-
-<#
-.SYNOPSIS
 Refresh path environment variable for process scope.
 #>
 function Update-SessionEnvironment {
-    $envPath = @('Machine', 'User', 'Process') | `
-        ForEach-Object { [Environment]::GetEnvironmentVariable('Path', $_).Split(';') } | `
-        Select-Object -Unique | `
-        Where-Object { $_ } | `
-        Join-String -Separator ';'
+    $auxHashSet = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
 
-    [Environment]::SetEnvironmentVariable('Path', $envPath, 'Process')
+    foreach ($scope in @('Machine', 'User', 'Process')) {
+        [Environment]::GetEnvironmentVariable('Path', $scope).Split(';').Where({ $_ }) | ForEach-Object {
+            $auxHashSet.Add($_) | Out-Null
+        }
+    }
+
+    [Environment]::SetEnvironmentVariable('Path', [string]::Join(';', $auxHashSet), 'Process')
 }
 
 Set-Alias -Name refreshenv -Value Update-SessionEnvironment

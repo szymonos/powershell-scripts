@@ -3,20 +3,27 @@
 .SYNOPSIS
 Setting up PowerShell for the all users.
 .EXAMPLE
-sudo .config/macos/scripts/setup_profile_allusers.ps1
+sudo .config/macos/scripts/setup_profile_allusers.ps1 $(id -un)
 #>
+param (
+    [Parameter(Position = 0)]
+    [string]$UserName
+)
+
 $WarningPreference = 'Ignore'
 
-# path variables
-$user = $(id -un 1000)
-$group = $(sudo -u $user groups | awk '{print $1}')
-$CFG_PATH = "/home/$user/tmp/config/pwsh_cfg"
+# calculate variables
+$user = $UserName ? $UserName : $(id -un 1000)
+$userGroup = id -gn $user
+$rootGroup = id -gn
+$userHome = sudo -u $user echo $HOME
+$CFG_PATH = "$userHome/tmp/config/pwsh_cfg"
 $SCRIPTS_PATH = '/usr/local/share/powershell/Scripts'
 # copy config files for WSL setup
 if (Test-Path .config/.assets/pwsh_cfg -PathType Container) {
     if (-not (Test-Path $CFG_PATH)) {
         New-Item $CFG_PATH -ItemType Directory | Out-Null
-        chown -R ${user}:${group} /home/$user/tmp
+        chown -R ${user}:${userGroup} $userHome/tmp
     }
     Copy-Item .config/.assets/pwsh_cfg/* $CFG_PATH -Force
 }
@@ -37,13 +44,13 @@ if (Test-Path $CFG_PATH -PathType Container) {
     # TODO to be removed, cleanup legacy aliases
     Get-ChildItem -Path $SCRIPTS_PATH -Filter '*_aliases_*.ps1' -File | Remove-Item -Force
     # PowerShell profile
-    install -o root -g root -m 0644 $CFG_PATH/profile.ps1 $PROFILE.AllUsersAllHosts
+    install -o root -g $rootGroup -m 0644 $CFG_PATH/profile.ps1 $PROFILE.AllUsersAllHosts
     # PowerShell functions
     if (-not (Test-Path $SCRIPTS_PATH)) {
         New-Item $SCRIPTS_PATH -ItemType Directory | Out-Null
     }
-    install -o root -g root -m 0644 $CFG_PATH/_aliases_common.ps1 $SCRIPTS_PATH
-    install -o root -g root -m 0644 $CFG_PATH/_aliases_macos.ps1 $SCRIPTS_PATH
+    install -o root -g $rootGroup -m 0644 $CFG_PATH/_aliases_common.ps1 $SCRIPTS_PATH
+    install -o root -g $rootGroup -m 0644 $CFG_PATH/_aliases_macos.ps1 $SCRIPTS_PATH
     # clean config folder
     Remove-Item $CFG_PATH -Recurse -Force
 }

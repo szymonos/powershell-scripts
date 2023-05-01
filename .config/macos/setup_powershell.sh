@@ -14,6 +14,8 @@
 if [ $EUID -eq 0 ]; then
   printf '\e[91mDo not run the script as root!\e[0m\n'
   exit 1
+else
+  user=$(id -un)
 fi
 
 # parse named parameters
@@ -35,7 +37,7 @@ if [[ -n "$omp_theme" || -f /usr/bin/oh-my-posh ]]; then
   printf "\e[96minstalling oh-my-posh...\e[0m\n"
   .config/macos/scripts/install_omp.sh
   if [ -n "$omp_theme" ]; then
-    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme
+    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme --user $user
   fi
 fi
 printf "\e[96minstalling packages...\e[0m\n"
@@ -43,7 +45,7 @@ printf "\e[96minstalling packages...\e[0m\n"
 .config/macos/scripts/install_exa.sh
 .config/macos/scripts/install_pwsh.sh
 printf "\e[96msetting up profile for all users...\e[0m\n"
-sudo .config/macos/scripts/setup_profile_allusers.ps1
+sudo .config/macos/scripts/setup_profile_allusers.ps1 $user
 printf "\e[96msetting up profile for the current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules

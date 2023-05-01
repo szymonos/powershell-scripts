@@ -6,10 +6,14 @@ sudo .config/linux/scripts/setup_omp.sh --theme "powerline"
 if [ $EUID -ne 0 ]; then
   echo -e '\e[91mRun the script as root!\e[0m'
   exit 1
+else
+  user=$(id -un)
+  group=$(id -gn)
 fi
 
 # parse named parameters
-theme=${1:-base}
+theme=${theme:-base}
+user=${user:-"$(id -un 1000)"}
 while [ $# -gt 0 ]; do
   if [[ $1 == *"--"* ]]; then
     param="${1/--/}"
@@ -19,7 +23,7 @@ while [ $# -gt 0 ]; do
 done
 
 # path variables
-CFG_PATH="/home/$(id -un 1000)/tmp/config/omp_cfg"
+CFG_PATH="$(sudo -u $user echo $HOME)/tmp/config/omp_cfg"
 OH_MY_POSH_PATH='/usr/local/share/oh-my-posh'
 # copy profile for WSL setup
 if [ -f .config/.assets/omp_cfg/${theme}.omp.json ]; then
@@ -34,7 +38,7 @@ fi
 # *Copy oh-my-posh theme
 if [ -f $CFG_PATH/${theme}.omp.json ]; then
   mkdir -p $OH_MY_POSH_PATH
-  install -o root -g root -m 0644 $CFG_PATH/${theme}.omp.json $OH_MY_POSH_PATH/theme.omp.json
+  install -o $user -g $group -m 0644 $CFG_PATH/${theme}.omp.json $OH_MY_POSH_PATH/theme.omp.json
 fi
 
 # clean config folder

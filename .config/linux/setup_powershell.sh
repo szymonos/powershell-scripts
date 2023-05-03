@@ -52,7 +52,7 @@ if [ -f /usr/bin/pwsh ]; then
   modules=($ps_modules)
   [ -f /usr/bin/git ] && modules+=(aliases-git) || true
   [ -f /usr/bin/kubectl ] && modules+=(aliases-kubectl) || true
-  if [ -n "$modules" ]; then
+  if [[ -n "$modules" && -f /usr/bin/git ]]; then
     printf "\e[96minstalling ps-modules...\e[0m\n"
     # determine if ps-modules repository exist and clone if necessary
     get_origin="git config --get remote.origin.url"

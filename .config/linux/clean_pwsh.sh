@@ -3,7 +3,7 @@
 .config/linux/clean_pwsh.sh
 '
 if [ $EUID -eq 0 ]; then
-  echo -e '\e[91mDo not run the script as root!\e[0m'
+  printf '\e[31;1mDo not run the script as root.\e[0m\n'
   exit 1
 fi
 

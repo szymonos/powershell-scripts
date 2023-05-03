@@ -12,8 +12,10 @@
 .config/linux/setup_powershell.sh --omp_theme atomic
 '
 if [ $EUID -eq 0 ]; then
-  echo -e '\e[91mDo not run the script as root!\e[0m'
+  printf '\e[31;1mDo not run the script as root.\e[0m\n'
   exit 1
+else
+  user=$(id -un)
 fi
 
 # parse named parameters
@@ -32,18 +34,18 @@ SCRIPT_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)
 pushd "$(cd "${SCRIPT_ROOT}/../../" && pwd)" >/dev/null
 
 if [[ -n "$omp_theme" || -f /usr/bin/oh-my-posh ]]; then
-  echo -e "\e[96minstalling oh-my-posh...\e[0m"
+  printf "\e[96minstalling oh-my-posh...\e[0m\n"
   sudo .config/linux/scripts/install_omp.sh >/dev/null
   if [ -n "$omp_theme" ]; then
-    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme
+    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme --user $user
   fi
 fi
-echo -e "\e[96minstalling packages...\e[0m"
+printf "\e[96minstalling packages...\e[0m\n"
 sudo .config/linux/scripts/install_exa.sh >/dev/null
 sudo .config/linux/scripts/install_pwsh.sh >/dev/null
-echo -e "\e[96msetting up profile for all users...\e[0m"
-sudo .config/linux/scripts/setup_profile_allusers.ps1
-echo -e "\e[96msetting up profile for the current user...\e[0m"
+printf "\e[96msetting up profile for all users...\e[0m\n"
+sudo .config/linux/scripts/setup_profile_allusers.ps1 -UserName $user
+printf "\e[96msetting up profile for the current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules
 if [ -f /usr/bin/pwsh ]; then
@@ -51,7 +53,7 @@ if [ -f /usr/bin/pwsh ]; then
   [ -f /usr/bin/git ] && modules+=(aliases-git) || true
   [ -f /usr/bin/kubectl ] && modules+=(aliases-kubectl) || true
   if [ -n "$modules" ]; then
-    echo -e "\e[96minstalling ps-modules...\e[0m"
+    printf "\e[96minstalling ps-modules...\e[0m\n"
     # determine if ps-modules repository exist and clone if necessary
     get_origin="git config --get remote.origin.url"
     origin=$(eval $get_origin)
@@ -69,7 +71,7 @@ if [ -f /usr/bin/pwsh ]; then
     fi
     # install modules
     for mod in ${modules[@]}; do
-      echo -e "\e[32m$mod\e[0m" >&2
+      printf "\e[32m$mod\e[0m\n" >&2
       if [ "$mod" = 'do-common' ]; then
         sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
       else

@@ -12,7 +12,7 @@
 .config/macos/setup_powershell.sh --omp_theme atomic
 '
 if [ $EUID -eq 0 ]; then
-  printf '\e[91mDo not run the script as root!\e[0m\n'
+  printf '\e[31;1mDo not run the script as root.\e[0m\n'
   exit 1
 else
   user=$(id -un)
@@ -45,7 +45,7 @@ printf "\e[96minstalling packages...\e[0m\n"
 .config/macos/scripts/install_exa.sh
 .config/macos/scripts/install_pwsh.sh
 printf "\e[96msetting up profile for all users...\e[0m\n"
-sudo .config/macos/scripts/setup_profile_allusers.ps1 $user
+sudo .config/macos/scripts/setup_profile_allusers.ps1 -UserName $user
 printf "\e[96msetting up profile for the current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules

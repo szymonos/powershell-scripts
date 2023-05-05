@@ -57,11 +57,11 @@ if [ -f /usr/bin/pwsh ]; then
     # determine if ps-modules repository exist and clone if necessary
     get_origin="git config --get remote.origin.url"
     origin=$(eval $get_origin)
-    remote=${origin/vagrant-scripts/ps-modules}
+    remote=${origin/powershell-scripts/ps-modules}
     if [ -d ../ps-modules ]; then
       pushd ../ps-modules >/dev/null
       if [ "$(eval $get_origin)" = "$remote" ]; then
-        git reset --hard --quiet && git clean --force -d && git pull --quiet
+        git fetch -q && git reset --hard -q "origin/$(git branch --show-current)"
       else
         modules=()
       fi
@@ -69,15 +69,22 @@ if [ -f /usr/bin/pwsh ]; then
     else
       git clone $remote ../ps-modules
     fi
-    # install modules
-    for mod in ${modules[@]}; do
-      printf "\e[32m$mod\e[0m\n" >&2
-      if [ "$mod" = 'do-common' ]; then
-        sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
-      else
-        ../ps-modules/module_manage.ps1 "$mod" -CleanUp
-      fi
-    done
+    # install do-common module for all users
+    if grep -qw 'do-common' <<<$ps_modules; then
+      printf "\e[3;32mAllUsers\e[23m    : do-common\e[0m\n"
+      sudo ../ps-modules/module_manage.ps1 'do-common' -CleanUp
+    fi
+    # install rest of the modules for the current user
+    modules=(${modules[@]/do-common/})
+    if [ -n "$modules" ]; then
+      # Convert the modules array to a comma-separated string with quoted elements
+      printf "\e[3;32mCurrentUser\e[23m : ${modules[*]}\e[0m\n"
+      mods=''
+      for element in "${modules[@]}"; do
+        mods="$mods'$element',"
+      done
+      pwsh -nop -c "@(${mods%,}) | ../ps-modules/module_manage.ps1 -CleanUp"
+    fi
   fi
 fi
 

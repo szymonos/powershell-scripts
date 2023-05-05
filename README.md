@@ -1,23 +1,22 @@
 # PowerShell Scripts
 
-Repository for PowerShell scripts, modules, profiles, etc.
+Repository for PowerShell setup scripts for Windows, Linux and macOS.
 
 ## Folder structure
 
 ``` sh
 .
-├── .config           # configuration setup scripts and files
-│   ├── .assets         # folder with profile, themes, aliases/functions
-│   │   ├── omp_cfg       # oh-my-posh themes
-│   │   └── pwsh_cfg      # PowerShell profiles and aliases/functions
+├── .config           # configuration files
+│   ├── omp_cfg         # oh-my-posh themes
+│   └── pwsh_cfg        # PowerShell profiles and aliases/functions
+├── .vscode           # VSCode configuration
+└── scripts           # helper scripts and functions for running other scripts
 │   ├── linux           # Linux setup scripts
-│   │   └── scripts       # installation scripts
+│   │   └── .include      # installation scripts
 │   ├── macos           # macOS setup scripts
-│   │   └── scripts       # installation scripts
+│   │   └── .include      # installation scripts
 │   └── windows         # Windows setup scripts
-│       └── scripts       # installation scripts
-├── .include          # helper scripts and functions for running other scripts
-└── .vscode           # VSCode configuration
+│       └── .include      # installation scripts
 ```
 
 ## PSReadLine
@@ -26,6 +25,8 @@ One of the best features for the PS CLI experience is the PSReadLine **List Pred
 
 - `Alt+j` - to select next element on the list
 - `Alt+k` - to select the previous element on the list
+
+> Doesn't work on macOS 😞.
 
 ### Other shortcuts
 
@@ -38,5 +39,6 @@ One of the best features for the PS CLI experience is the PSReadLine **List Pred
 
 ## Links
 
-- [PowerShell on Linux](.config/linux/PS_LINUX.md)
-- [PowerShell on Window](.config/windows/PS_WINDOWS.md)
+- [PowerShell on Linux](scripts/linux/PS_LINUX.md)
+- [PowerShell on Windows](scripts/windows/PS_WINDOWS.md)
+- [PowerShell on macOS](scripts/macos/PS_MACOS.md)

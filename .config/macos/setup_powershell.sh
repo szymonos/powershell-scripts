@@ -12,8 +12,10 @@
 .config/macos/setup_powershell.sh --omp_theme atomic
 '
 if [ $EUID -eq 0 ]; then
-  printf '\e[91mDo not run the script as root!\e[0m\n'
+  printf '\e[31;1mDo not run the script as root.\e[0m\n'
   exit 1
+else
+  user=$(id -un)
 fi
 
 # parse named parameters
@@ -35,7 +37,7 @@ if [[ -n "$omp_theme" || -f /usr/bin/oh-my-posh ]]; then
   printf "\e[96minstalling oh-my-posh...\e[0m\n"
   .config/macos/scripts/install_omp.sh
   if [ -n "$omp_theme" ]; then
-    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme
+    sudo .config/linux/scripts/setup_omp.sh --theme $omp_theme --user $user
   fi
 fi
 printf "\e[96minstalling packages...\e[0m\n"
@@ -43,7 +45,7 @@ printf "\e[96minstalling packages...\e[0m\n"
 .config/macos/scripts/install_exa.sh
 .config/macos/scripts/install_pwsh.sh
 printf "\e[96msetting up profile for all users...\e[0m\n"
-sudo .config/macos/scripts/setup_profile_allusers.ps1
+sudo .config/macos/scripts/setup_profile_allusers.ps1 -UserName $user
 printf "\e[96msetting up profile for the current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules
@@ -51,16 +53,16 @@ if [ -f /usr/bin/pwsh ]; then
   modules=($ps_modules)
   [ -f /usr/bin/git ] && modules+=(aliases-git) || true
   [ -f /usr/bin/kubectl ] && modules+=(aliases-kubectl) || true
-  if [ -n "$modules" ]; then
+  if [[ -n "$modules" && -f /usr/bin/git ]]; then
     printf "\e[96minstalling ps-modules...\e[0m\n"
     # determine if ps-modules repository exist and clone if necessary
     get_origin="git config --get remote.origin.url"
     origin=$(eval $get_origin)
-    remote=${origin/vagrant-scripts/ps-modules}
+    remote=${origin/powershell-scripts/ps-modules}
     if [ -d ../ps-modules ]; then
       pushd ../ps-modules >/dev/null
       if [ "$(eval $get_origin)" = "$remote" ]; then
-        git reset --hard --quiet && git clean --force -d && git pull --quiet
+        git fetch -q && git reset --hard -q "origin/$(git branch --show-current)"
       else
         modules=()
       fi
@@ -68,15 +70,22 @@ if [ -f /usr/bin/pwsh ]; then
     else
       git clone $remote ../ps-modules
     fi
-    # install modules
-    for mod in ${modules[@]}; do
-      printf "\e[32m$mod\e[0m\n" >&2
-      if [ "$mod" = 'do-common' ]; then
-        sudo ../ps-modules/module_manage.ps1 "$mod" -CleanUp
-      else
-        ../ps-modules/module_manage.ps1 "$mod" -CleanUp
-      fi
-    done
+    # install do-common module for all users
+    if grep -qw 'do-common' <<<$ps_modules; then
+      printf "\e[3;32mAllUsers\e[23m    : do-common\e[0m\n"
+      sudo ../ps-modules/module_manage.ps1 'do-common' -CleanUp
+    fi
+    # install rest of the modules for the current user
+    modules=(${modules[@]/do-common/})
+    if [ -n "$modules" ]; then
+      # Convert the modules array to a comma-separated string with quoted elements
+      printf "\e[3;32mCurrentUser\e[23m : ${modules[*]}\e[0m\n"
+      mods=''
+      for element in "${modules[@]}"; do
+        mods="$mods'$element',"
+      done
+      pwsh -nop -c "@(${mods%,}) | ../ps-modules/module_manage.ps1 -CleanUp"
+    fi
   fi
 fi
 

@@ -20,7 +20,7 @@ while [ $# -gt 0 ]; do
 done
 
 # check if specified user exists
-if ! grep -qw "^$user" /etc/passwd; then
+if ! sudo -u $user true 2>/dev/null; then
   if [ -n "$user" ]; then
     printf "\e[31;1mUser does not exist ($user).\e[0m\n"
   else

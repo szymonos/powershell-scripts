@@ -23,7 +23,8 @@ begin {
     # check if specified user exists
     $user = $UserName ? $UserName : $(id -un 1000 2>$null)
     if ($user) {
-        if (-not (Select-String $user /etc/passwd -Quiet)) {
+        $me = sudo -u $user id -un 2>$null || ''
+        if ($me -ne $user) {
             Write-Error "User does not exist ($user)."
         }
     } else {

@@ -49,7 +49,7 @@ sudo .config/macos/scripts/setup_profile_allusers.ps1 -UserName $user
 printf "\e[96msetting up profile for the current user...\e[0m\n"
 .config/linux/scripts/setup_profile_user.ps1
 # install powershell modules
-if [ -f /usr/bin/pwsh ]; then
+if type pwsh >/dev/null; then
   modules=($ps_modules)
   [ -f /usr/bin/git ] && modules+=(aliases-git) || true
   [ -f /usr/bin/kubectl ] && modules+=(aliases-kubectl) || true

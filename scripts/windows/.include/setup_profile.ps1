@@ -82,23 +82,26 @@ process {
         & "$HOME/miniconda3/Scripts/conda.exe" init powershell | Out-Null
     }
 
-    # *update installed modules
-    if ($UpdateModules) {
-        scripts/windows/.include/update_psresources.ps1
-    }
-
     # *install modules
-    while (-not ((Get-Module PowerShellGet -ListAvailable).Version.Major -ge 3)) {
+    $psGetVer = (Find-Module PowerShellGet -AllowPrerelease).Version
+    for ($i = 0; $psGetVer -and ($psGetVer -notin (Get-InstalledModule -Name PowerShellGet -AllVersions).Version) -and $i -lt 10; $i++) {
         Write-Host 'installing PowerShellGet...'
-        Install-Module PowerShellGet -AllowPrerelease -Force
+        Install-Module PowerShellGet -AllowPrerelease -Force -SkipPublisherCheck
     }
-    if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
-        Write-Host 'setting PSGallery trusted...'
-        Set-PSResourceRepository -Name PSGallery -Trusted
-    }
-    while (-not (Get-Module posh-git -ListAvailable)) {
-        Write-Host 'installing posh-git...'
-        Install-PSResource -Name posh-git
+    # install/update modules
+    if (Get-InstalledModule -Name PowerShellGet) {
+        if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
+            Write-Host 'setting PSGallery trusted...'
+            Set-PSResourceRepository -Name PSGallery -Trusted
+        }
+        for ($i = 0; (Test-Path /usr/bin/git) -and -not (Get-Module posh-git -ListAvailable) -and $i -lt 10; $i++) {
+            Write-Host 'installing posh-git...'
+            Install-PSResource -Name posh-git
+        }
+        # update existing modules
+        if (Test-Path scripts/windows/.include/update_psresources.ps1 -PathType Leaf) {
+            scripts/windows/.include/update_psresources.ps1
+        }
     }
 
     # *ps-modules

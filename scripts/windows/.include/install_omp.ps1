@@ -6,9 +6,12 @@ scripts/windows/.include/install_omp.ps1
 #>
 $ErrorActionPreference = 'Stop'
 
+# dot-source ps_functions script
+. "$PSScriptRoot/ps_functions.ps1"
+
 $app = 'oh-my-posh'
 
-$rel = Invoke-CommandRetry -Verbose {
+$rel = Invoke-CommandRetry {
     (Invoke-RestMethod 'https://api.github.com/repos/JanDeDobbeleer/oh-my-posh/releases/latest').tag_name -replace '^v'
 }
 

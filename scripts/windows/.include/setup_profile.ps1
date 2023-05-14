@@ -1,4 +1,3 @@
-#Requires -Version 7.0
 <#
 .SYNOPSIS
 Set up PowerShell Core profile on Windows.
@@ -35,8 +34,6 @@ param (
 )
 
 begin {
-    $ErrorActionPreference = 'Stop'
-
     # calculate variables
     $profilePath = [IO.Path]::GetDirectoryName($PROFILE)
     $scriptsPath = [IO.Path]::Combine($profilePath, 'Scripts')
@@ -76,15 +73,14 @@ process {
     Copy-Item -Path .config/pwsh_cfg/_aliases_win.ps1 -Destination $scriptsPath -Force
 
     # *conda init
-    $condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }
-    if ((Test-Path $HOME/miniconda3/Scripts/conda.exe) -and -not $condaSet) {
+    if ((Test-Path $HOME/miniconda3/Scripts/conda.exe) -and -not (Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet)) {
         Write-Verbose 'adding miniconda initialization...'
         & "$HOME/miniconda3/Scripts/conda.exe" init powershell | Out-Null
     }
 
     # *install modules
     $psGetVer = (Find-Module PowerShellGet -AllowPrerelease).Version
-    for ($i = 0; $psGetVer -and ($psGetVer -notin (Get-InstalledModule -Name PowerShellGet -AllVersions).Version) -and $i -lt 10; $i++) {
+    for ($i = 0; $psGetVer -and ($psGetVer -notin (Get-InstalledModule -Name PowerShellGet -AllVersions -ErrorAction SilentlyContinue).Version) -and $i -lt 10; $i++) {
         Write-Host 'installing PowerShellGet...'
         Install-Module PowerShellGet -AllowPrerelease -Force -SkipPublisherCheck
     }
@@ -105,29 +101,37 @@ process {
     }
 
     # *ps-modules
-    $modules = @(
-        $PSModules
-        (Get-Module -ListAvailable Az) ? 'do-az' : $null
-        (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) ? 'aliases-git' : $null
-        (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) ? 'aliases-kubectl' : $null
-    ).Where({ $_ }) | Select-Object -Unique
+    $modules = [Collections.Generic.List[String]]::new()
+    $PSModules.ForEach({ $modules.Add($_) })
 
-    if ('aliases-kubectl' -in $modules) {
+    # determine modules to install
+    if (Get-Module -ListAvailable Az) {
+        $modules.Add('do-az')
+        Write-Verbose "Added `e[3mdo-az`e[23m to be installed from ps-modules."
+    }
+    $modules.Add('aliases-git') # git is always installed
+    if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
+        $modules.Add('aliases-git')
+        Write-Verbose "Added `e[3maliases-git`e[23m to be installed from ps-modules."
+    }
+    if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
+        $modules.Add('aliases-kubectl')
+        Write-Verbose "Added `e[3maliases-kubectl`e[23m to be installed from ps-modules."
         # set powershell kubectl autocompletion
         [IO.File]::WriteAllText($PROFILE, (kubectl.exe completion powershell).Replace("''kubectl''", "''k''"))
     }
+
     if ($modules) {
-        Write-Host 'installing ps-modules...' -ForegroundColor Cyan
         # determine if ps-modules repository exist and clone if necessary
         $getOrigin = { git config --get remote.origin.url }
         $remote = (Invoke-Command $getOrigin).Replace('powershell-scripts', 'ps-modules')
         try {
-            Push-Location '../ps-modules'
+            Push-Location '../ps-modules' -ErrorAction Stop
             if ($(Invoke-Command $getOrigin) -eq $remote) {
-                # pull ps-modules repository
-                git reset --hard --quiet && git clean --force -d && git pull --quiet
+                # refresh ps-modules repository
+                git fetch --quiet && git reset --hard --quiet "origin/$(git branch --show-current)"
             } else {
-                $modules = @()
+                $modules = [System.Collections.Generic.List[string]]::new()
             }
             Pop-Location
         } catch {
@@ -135,8 +139,9 @@ process {
             git clone $remote ../ps-modules
         }
         if ($modules) {
-            Write-Host "$modules" -ForegroundColor DarkGreen
-            $modules | ../ps-modules/module_manage.ps1 -CleanUp -Verbose -ErrorAction SilentlyContinue
+            Write-Host 'installing ps-modules...' -ForegroundColor Cyan
+            Write-Host "`e[3mCurrentUser`e[23m : $modules" -ForegroundColor DarkGreen
+            $modules | ../ps-modules/module_manage.ps1 -CleanUp -ErrorAction SilentlyContinue
         }
     }
 }

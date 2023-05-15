@@ -1,4 +1,3 @@
-#Requires -PSEdition Desktop
 <#
 .SYNOPSIS
 Retry executing command if fails on HttpRequestException.

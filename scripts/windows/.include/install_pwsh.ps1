@@ -23,7 +23,7 @@ if (Get-Command pwsh.exe -CommandType Application -ErrorAction SilentlyContinue)
     }
 }
 
-if ($pwshp = Get-Process pwsh) {
+if ($pwshp = Get-Process pwsh -ErrorAction SilentlyContinue) {
     $msg = 'Do you want to terminate existing pwsh process(es)? [y/N]'
     if ((Read-Host -Prompt $msg) -eq 'y') {
         $pwshp | Stop-Process -Force

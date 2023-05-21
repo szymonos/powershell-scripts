@@ -12,13 +12,13 @@ List of PowerShell modules from ps-modules repository to be installed.
 Switch, whether to update installed PowerShell modules.
 
 .EXAMPLE
-$PSModules = @('do-common', 'do-win')
 # ~set up PowerShell without oh-my-posh
 scripts/windows/setup_powershell.ps1
+$PSModules = @('do-common')
 scripts/windows/setup_powershell.ps1 -m $PSModules
 scripts/windows/setup_powershell.ps1 -m $PSModules -UpdateModules
 # ~set up PowerShell with oh-my-posh
-$OmpTheme = 'powerline'
+$OmpTheme = 'nerd'
 scripts/windows/setup_powershell.ps1 -t $OmpTheme
 scripts/windows/setup_powershell.ps1 -t $OmpTheme -m $PSModules
 scripts/windows/setup_powershell.ps1 -t $OmpTheme -m $PSModules -UpdateModules
@@ -29,7 +29,7 @@ param (
     [string]$OmpTheme,
 
     [Alias('m')]
-    [string[]]$PSModules,
+    [string[]]$PSModules = @('do-common', 'do-win'),
 
     [switch]$UpdateModules
 )

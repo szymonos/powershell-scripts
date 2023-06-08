@@ -34,19 +34,25 @@ if ($IsWindows) {
 } else {
     [Environment]::SetEnvironmentVariable('OMP_PATH', '/usr/local/share/oh-my-posh')
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', '/usr/local/share/powershell/Scripts')
+    (Select-String '(?<=^ID.+)(alpine|arch|fedora|debian|ubuntu|opensuse)' -List /etc/os-release).Matches.Value.ForEach({
+            [Environment]::SetEnvironmentVariable('DISTRO_FAMILY', $_)
+        }
+    )
 }
-# $PATH variable
+# $env:PATH variable
 @(
     [IO.Path]::Combine($HOME, '.local', 'bin')
     [IO.Path]::Combine($HOME, '.cargo', 'bin')
     '/usr/local/bin'
-).ForEach{
-    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
+) | ForEach-Object {
+    if ((Test-Path $_) -and $env:PATH -NotMatch "$_/?($([IO.Path]::PathSeparator)|$)") {
         [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
     }
 }
-# dot source PowerShell scripts
-(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter '_*.ps1' -File).ForEach{ . $_.FullName }
+# dot source PowerShell alias scripts
+if (Test-Path $env:SCRIPTS_PATH) {
+    Get-ChildItem -Path $env:SCRIPTS_PATH -Filter '_aliases_*.ps1' -File | ForEach-Object { . $_.FullName }
+}
 #endregion
 
 # region brew

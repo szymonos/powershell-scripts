@@ -45,18 +45,19 @@ function Format-Duration ([timespan]$TimeSpan) {
 #endregion
 
 #region environment variables and aliases
-[Environment]::SetEnvironmentVariable('PROFILE_PATH', [IO.Path]::GetDirectoryName($PROFILE))
-[Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine($env:PROFILE_PATH, 'Scripts'))
-# $PATH variable
+[Environment]::SetEnvironmentVariable('SCRIPTS_PATH', [IO.Path]::Combine([IO.Path]::GetDirectoryName($PROFILE), 'Scripts'))
+# $env:PATH variable
 @(
     [IO.Path]::Combine($HOME, '.local', 'bin')
-).ForEach{
+) | ForEach-Object {
     if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
         [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
     }
 }
-# dot source PowerShell scripts
-(Get-ChildItem -Path $env:SCRIPTS_PATH -Filter '_*.ps1' -File).ForEach{ . $_.FullName }
+# dot source PowerShell alias scripts
+if (Test-Path $env:SCRIPTS_PATH) {
+    Get-ChildItem -Path $env:SCRIPTS_PATH -Filter '_aliases_*.ps1' -File | ForEach-Object { . $_.FullName }
+}
 #endregion
 
 #region prompt

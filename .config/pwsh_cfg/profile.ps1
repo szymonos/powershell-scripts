@@ -34,6 +34,10 @@ if ($IsWindows) {
 } else {
     [Environment]::SetEnvironmentVariable('OMP_PATH', '/usr/local/share/oh-my-posh')
     [Environment]::SetEnvironmentVariable('SCRIPTS_PATH', '/usr/local/share/powershell/Scripts')
+    (Select-String '(?<=^ID.+)(alpine|arch|fedora|debian|ubuntu|opensuse)' -List /etc/os-release).Matches.Value.ForEach({
+            [Environment]::SetEnvironmentVariable('DISTRO_FAMILY', $_)
+        }
+    )
 }
 # $env:PATH variable
 @(

@@ -17,7 +17,7 @@ scripts/windows/.include/setup_profile.ps1
 scripts/windows/.include/setup_profile.ps1 -m $PSModules
 scripts/windows/.include/setup_profile.ps1 -m $PSModules -UpdateModules
 # ~set up PowerShell with oh-my-posh
-$OmpTheme = 'powerline'
+$OmpTheme = 'nerd'
 scripts/windows/.include/setup_profile.ps1 -t $OmpTheme
 scripts/windows/.include/setup_profile.ps1 -t $OmpTheme -m $PSModules
 scripts/windows/.include/setup_profile.ps1 -t $OmpTheme -m $PSModules -UpdateModules
@@ -28,7 +28,9 @@ param (
     [string]$OmpTheme,
 
     [Alias('m')]
-    [string[]]$PSModules,
+    [ValidateScript({ $_.ForEach({ $_ -in @('aliases-git', 'aliases-kubectl', 'do-az', 'do-common', 'do-win') }) -notcontains $false },
+        ErrorMessage = 'Wrong modules provided. Valid values: aliases-git aliases-kubectl do-az do-common do-win')]
+    [string[]]$PSModules = @('do-common', 'do-win'),
 
     [switch]$UpdateModules
 )
@@ -101,21 +103,20 @@ process {
     }
 
     # *ps-modules
-    $modules = [Collections.Generic.List[String]]::new()
-    $PSModules.ForEach({ $modules.Add($_) })
+    $modules = [Collections.Generic.HashSet[String]]::new()
+    $PSModules.ForEach({ $modules.Add($_) | Out-Null })
 
     # determine modules to install
     if (Get-Module -ListAvailable Az) {
-        $modules.Add('do-az')
+        $modules.Add('do-az') | Out-Null
         Write-Verbose "Added `e[3mdo-az`e[23m to be installed from ps-modules."
     }
-    $modules.Add('aliases-git') # git is always installed
     if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        $modules.Add('aliases-git')
+        $modules.Add('aliases-git') | Out-Null
         Write-Verbose "Added `e[3maliases-git`e[23m to be installed from ps-modules."
     }
     if (Get-Command kubectl.exe -CommandType Application -ErrorAction SilentlyContinue) {
-        $modules.Add('aliases-kubectl')
+        $modules.Add('aliases-kubectl') | Out-Null
         Write-Verbose "Added `e[3maliases-kubectl`e[23m to be installed from ps-modules."
         # set powershell kubectl autocompletion
         [IO.File]::WriteAllText($PROFILE, (kubectl.exe completion powershell).Replace("''kubectl''", "''k''"))
@@ -123,15 +124,14 @@ process {
 
     if ($modules) {
         # determine if ps-modules repository exist and clone if necessary
-        $getOrigin = { git config --get remote.origin.url }
-        $remote = (Invoke-Command $getOrigin).Replace('powershell-scripts', 'ps-modules')
+        $remote = (git config --get remote.origin.url).Replace('powershell-scripts', 'ps-modules')
         try {
             Push-Location '../ps-modules' -ErrorAction Stop
-            if ($(Invoke-Command $getOrigin) -eq $remote) {
+            if ($remote -match '\bszymonos/ps-modules\.git$') {
                 # refresh ps-modules repository
                 git fetch --quiet && git reset --hard --quiet "origin/$(git branch --show-current)"
             } else {
-                $modules = [System.Collections.Generic.List[string]]::new()
+                $modules = [Collections.Generic.HashSet[string]]::new()
             }
             Pop-Location
         } catch {

@@ -50,7 +50,7 @@ process {
     Update-SessionEnvironment
     $cmd = 'scripts/windows/.include/setup_profile.ps1'
     if ($OmpTheme) { $cmd += " -OmpTheme '$OmpTheme'" }
-    if ($PSModules) { $cmd += " -PSModules @($([String]::Join(',', $PSModules.ForEach({ "'$_'" }))))" }
+    if ($PSModules) { $cmd += " -PSModules @($($PSModules | Join-String -SingleQuote -Separator ','))" }
     pwsh.exe -NoProfile -Command $cmd
 }
 

@@ -12,11 +12,11 @@ Switch, whether to update installed PowerShell modules.
 
 .EXAMPLE
 $PSModules = @('do-common', 'do-win')
-# ~set up PowerShell without oh-my-posh
+# :set up PowerShell without oh-my-posh
 scripts/windows/.include/setup_profile.ps1
 scripts/windows/.include/setup_profile.ps1 -m $PSModules
 scripts/windows/.include/setup_profile.ps1 -m $PSModules -UpdateModules
-# ~set up PowerShell with oh-my-posh
+# :set up PowerShell with oh-my-posh
 $OmpTheme = 'nerd'
 scripts/windows/.include/setup_profile.ps1 -t $OmpTheme
 scripts/windows/.include/setup_profile.ps1 -t $OmpTheme -m $PSModules

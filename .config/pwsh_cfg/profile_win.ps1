@@ -50,7 +50,7 @@ function Format-Duration ([timespan]$TimeSpan) {
 @(
     [IO.Path]::Combine($HOME, '.local', 'bin')
 ) | ForEach-Object {
-    if ((Test-Path $_) -and $env:PATH -NotMatch "$($IsWindows ? "$($_.Replace('\', '\\'))\\" : "$_/")?($([IO.Path]::PathSeparator)|$)") {
+    if ((Test-Path $_) -and $_ -notin $env:PATH.Split([IO.Path]::PathSeparator)) {
         [Environment]::SetEnvironmentVariable('PATH', [string]::Join([IO.Path]::PathSeparator, $_, $env:PATH))
     }
 }

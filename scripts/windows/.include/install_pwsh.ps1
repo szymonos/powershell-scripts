@@ -1,3 +1,4 @@
+#Requires -RunAsAdministrator
 #Requires -PSEdition Desktop
 <#
 .SYNOPSIS

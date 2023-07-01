@@ -2,6 +2,7 @@
 <#
 .SYNOPSIS
 Setting up PowerShell for the current user.
+
 .EXAMPLE
 scripts/linux/.include/setup_profile_user.ps1
 #>

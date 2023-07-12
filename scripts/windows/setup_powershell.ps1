@@ -44,7 +44,16 @@ begin {
 process {
     # *Install PowerShell
     Write-Host 'installing pwsh...' -ForegroundColor Cyan
-    scripts/windows/.include/install_pwsh.ps1
+    if (Test-IsAdmin) {
+        scripts/windows/.include/install_pwsh.ps1
+    } else {
+        if (Get-Command 'gsudo.exe' -CommandType Application -ErrorAction SilentlyContinue) {
+            gsudo powershell.exe -NoProfile scripts/windows/.include/install_pwsh.ps1
+        } else {
+            $scriptPath = Resolve-Path scripts/windows/.include/install_pwsh.ps1
+            Start-Process powershell.exe "-NoProfile -File `"$scriptPath`"" -Verb RunAs
+        }
+    }
 
     # *Setup profile
     Update-SessionEnvironment

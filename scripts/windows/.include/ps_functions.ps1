@@ -67,3 +67,15 @@ function Update-SessionEnvironment {
 }
 
 Set-Alias -Name refreshenv -Value Update-SessionEnvironment
+
+<#
+.SYNOPSIS
+Check if current context is run as administrator.
+#>
+function Test-IsAdmin {
+    $currentIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = [System.Security.Principal.WindowsPrincipal]$currentIdentity
+    $admin = [System.Security.Principal.WindowsBuiltInRole]'Administrator'
+
+    return $principal.IsInRole($admin)
+}

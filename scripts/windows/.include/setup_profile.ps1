@@ -127,25 +127,30 @@ process {
     }
 
     if ($modules) {
-        # determine if ps-modules repository exist and clone if necessary
-        $remote = (git config --get remote.origin.url).Replace('powershell-scripts', 'ps-modules')
+        $targetRepo = 'ps-modules'
+        # determine if target repository exists and clone if necessary
+        $getOrigin = { git config --get remote.origin.url }
+        $remote = (Invoke-Command $getOrigin) -replace '([:/]szymonos/)[\w-]+', "`$1$targetRepo"
         try {
-            Push-Location '../ps-modules' -ErrorAction Stop
-            if ($remote -match '\bszymonos/ps-modules\.git$') {
-                # refresh ps-modules repository
-                git fetch --quiet && git reset --hard --quiet "origin/$(git branch --show-current)"
+            Push-Location "../$targetRepo"
+            if ((Invoke-Command $getOrigin) -eq $remote) {
+                # refresh target repository
+                git fetch --prune --quiet
+                git switch main --force --quiet 2>$null
+                git reset --hard --quiet 'origin/main'
             } else {
-                $modules = [Collections.Generic.HashSet[string]]::new()
+                Write-Warning "Another `"$targetRepo`" repository exists."
+                $modules = [System.Collections.Generic.HashSet[string]]::new()
             }
             Pop-Location
         } catch {
-            # clone ps-modules repository
-            git clone $remote ../ps-modules
+            # clone target repository
+            git clone $remote "../$targetRepo"
         }
         if ($modules) {
             Write-Host 'installing ps-modules...' -ForegroundColor Cyan
             Write-Host "`e[3mCurrentUser`e[23m : $modules" -ForegroundColor DarkGreen
-            $modules | ../ps-modules/module_manage.ps1 -CleanUp -ErrorAction SilentlyContinue
+            $modules | & "../$targetRepo/module_manage.ps1" -CleanUp -ErrorAction SilentlyContinue
         }
     }
 }

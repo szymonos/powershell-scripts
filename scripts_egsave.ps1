@@ -19,10 +19,11 @@ begin {
     } catch {
         $targetRepo = 'ps-modules'
         # determine if target repository exists and clone if necessary
-        $remote = (git config --get remote.origin.url) -replace '(.+[:/]szymonos/)[\w-]+', "`$1$targetRepo"
+        $getOrigin = { git config --get remote.origin.url }
+        $remote = (Invoke-Command $getOrigin) -replace '([:/]szymonos/)[\w-]+', "`$1$targetRepo"
         try {
             Push-Location "../$targetRepo"
-            if ((git config --get remote.origin.url) -match "\bszymonos/$targetRepo\b") {
+            if ((Invoke-Command $getOrigin) -eq $remote) {
                 # refresh target repository
                 git fetch --prune --quiet
                 git switch main --force --quiet

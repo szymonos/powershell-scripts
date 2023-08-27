@@ -1,0 +1,65 @@
+[
+  {
+    "command": "workbench.action.terminal.runSelectedText",
+    "key": "ctrl+enter"
+  },
+  {
+    "command": "workbench.action.toggleMaximizedPanel",
+    "key": "ctrl+shift+q"
+  },
+  {
+    "key": "alt+q",
+    "command": "workbench.action.terminal.kill"
+  },
+  {
+    "key": "ctrl+shift+oem_comma",
+    "command": "workbench.action.openSettingsJson"
+  },
+  {
+    "key": "ctrl+shift+oem_3",
+    "command": "workbench.action.terminal.newWithProfile"
+  },
+  {
+    "key": "ctrl+shift+4",
+    "command": "editor.action.insertSnippet",
+    "when": "editorTextFocus",
+    "args": {
+      "snippet": "$($1${TM_SELECTED_TEXT})"
+    }
+  },
+  {
+    "key": "ctrl+j",
+    "command": "workbench.action.toggleAuxiliaryBar"
+  },
+  {
+    "key": "alt+x",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "'${file}'"
+    }
+  },
+  {
+    "key": "alt+s",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "cd '${fileDirname}'; clear\u000D"
+    }
+  },
+  {
+    "key": "alt+d",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "cd '${workspaceFolder}'; clear\u000D"
+    }
+  },
+  {
+    "key": "ctrl+e",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+e",
+    "command": "workbench.action.terminal.focus",
+    "when": "!terminalFocus"
+  }
+]

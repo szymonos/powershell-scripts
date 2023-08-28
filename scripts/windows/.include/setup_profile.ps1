@@ -81,9 +81,19 @@ process {
     }
 
     # *install modules
-    # TODO to be removed, uninstall PowerShellGet v3
-    if ($psGetv3 = (Get-Module PowerShellGet -ListAvailable).Where({ $_.Version.Major -eq 3 })) {
-        $psGetv3 | Uninstall-Module
+    # TODO to be removed, uninstall PowerShellGet v3, to use PSResourceGet instead
+    $psGetv3 = (Get-Module PowerShellGet -ListAvailable).Where({ $_.Version.Major -eq 3 })
+    foreach ($psGet in $psGetv3) {
+        $modulePath = Split-Path -Path $psGet.Path
+        $cmd = "Remove-Item -Path '$modulePath' -Recurse -Force -ErrorAction Stop"
+        try {
+            Invoke-Expression $cmd
+        } catch [System.UnauthorizedAccessException] {
+            Start-Process pwsh.exe "-NoProfile -Command `"$cmd`"" -Verb RunAs
+        } catch {
+            Write-Verbose $_.Exception.GetType().FullName
+            Write-Error $_
+        }
     }
     # install Microsoft.PowerShell.PSResourceGet
     for ($i = 0; -not (Get-Module Microsoft.PowerShell.PSResourceGet -ListAvailable) -and $i -lt 5; $i++) {

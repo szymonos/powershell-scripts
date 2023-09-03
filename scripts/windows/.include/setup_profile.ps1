@@ -1,3 +1,4 @@
+#Requires -PSEdition Core
 <#
 .SYNOPSIS
 Set up PowerShell Core profile on Windows.
@@ -111,7 +112,7 @@ process {
             Install-PSResource -Name posh-git
         }
         # update existing modules
-        if (Test-Path scripts/windows/.include/update_psresources.ps1 -PathType Leaf) {
+        if ($UpdateModules) {
             scripts/windows/.include/update_psresources.ps1
         }
     }

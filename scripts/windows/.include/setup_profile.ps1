@@ -82,6 +82,10 @@ process {
     }
 
     # *install modules
+    # set trusted installation policy for the PSGallery repository
+    if ((Get-PSRepository -Name PSGallery).InstallationPolicy -eq 'Untrusted') {
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+    }
     # TODO to be removed, uninstall PowerShellGet v3, to use PSResourceGet instead
     $psGetv3 = (Get-Module PowerShellGet -ListAvailable).Where({ $_.Version.Major -eq 3 })
     foreach ($psGet in $psGetv3) {

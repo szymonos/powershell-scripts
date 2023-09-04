@@ -169,7 +169,7 @@ process {
         if ($modules) {
             Write-Host 'installing ps-modules...' -ForegroundColor Cyan
             Write-Host "`e[3mCurrentUser`e[23m : $modules" -ForegroundColor DarkGreen
-            $modules | & "../$targetRepo/module_manage.ps1" -CleanUp -ErrorAction SilentlyContinue
+            $modules | & "../$targetRepo/module_manage.ps1" -CleanUp -Scope CurrentUser -ErrorAction SilentlyContinue
         }
     }
 }

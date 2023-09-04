@@ -99,17 +99,17 @@ process {
     # install Microsoft.PowerShell.PSResourceGet
     for ($i = 0; -not (Get-Module Microsoft.PowerShell.PSResourceGet -ListAvailable) -and $i -lt 5; $i++) {
         Write-Host 'installing PSResourceGet...'
-        Install-Module Microsoft.PowerShell.PSResourceGet -AllowPrerelease -Scope CurrentUser -Force -SkipPublisherCheck
+        Install-Module Microsoft.PowerShell.PSResourceGet -AllowPrerelease -Scope CurrentUser
     }
     # install/update modules
     if (Get-InstalledModule -Name Microsoft.PowerShell.PSResourceGet -ErrorAction SilentlyContinue) {
-        # update Microsoft.PowerShell.PSResourceGet
-        Install-Module Microsoft.PowerShell.PSResourceGet -AllowPrerelease -Scope CurrentUser -Force -SkipPublisherCheck
         # uninstall old versions
         Get-InstalledModule -Name Microsoft.PowerShell.PSResourceGet -AllVersions `
         | Sort-Object -Property PublishedDate -Descending `
         | Select-Object -Skip 1 `
         | Uninstall-Module
+        # update Microsoft.PowerShell.PSResourceGet
+        Update-Module Microsoft.PowerShell.PSResourceGet -AllowPrerelease -Scope CurrentUser
 
         if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
             Write-Host 'setting PSGallery trusted...'

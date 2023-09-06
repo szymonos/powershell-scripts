@@ -130,7 +130,7 @@ process {
     }
 
     # *ps-modules
-    $modules = [Collections.Generic.HashSet[String]]::new()
+    $modules = [System.Collections.Generic.HashSet[String]]::new()
     $PSModules.ForEach({ $modules.Add($_) | Out-Null })
 
     # determine modules to install
@@ -154,7 +154,7 @@ process {
         # determine if target repository exists and clone if necessary
         $getOrigin = { git config --get remote.origin.url }
         try {
-            Push-Location "../$targetRepo"
+            Push-Location "../$targetRepo" -ErrorAction Stop
             if ((Invoke-Command $getOrigin) -match "github\.com[:/]szymonos/$targetRepo\b") {
                 # refresh target repository
                 git fetch --prune --quiet
@@ -169,6 +169,10 @@ process {
             $remote = (Invoke-Command $getOrigin) -replace '([:/]szymonos/)[\w-]+', "`$1$targetRepo"
             # clone target repository
             git clone $remote "../$targetRepo"
+            if (-not $?) {
+                Write-Warning "Cloning of the `"$targetRepo`" repository failed."
+                $modules = [System.Collections.Generic.HashSet[string]]::new()
+            }
         }
         if ($modules) {
             Write-Host 'installing ps-modules...' -ForegroundColor Cyan

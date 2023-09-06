@@ -4,9 +4,17 @@
 Install specified nerd font from ryanoasis/nerd-fonts GitHub repo.
 .LINK
 https://github.com/ryanoasis/nerd-fonts
+
+.PARAMETER Font
+Name of the nerd font to be installed.
+.PARAMETER FontExt
+Specified font extension.
+
 .EXAMPLE
-$Font = 'RobotoMono'
+$Font = 'FiraCode'
 scripts/windows/.include/install_fonts_nerd.ps1 $Font
+# :check installed fonts
+[Drawing.Text.InstalledFontCollection]::new().Families | Select-String $Font
 #>
 [CmdletBinding()]
 param (

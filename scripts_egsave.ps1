@@ -1,5 +1,5 @@
-#Requires -PSEdition Core
 #!/usr/bin/pwsh -nop
+#Requires -PSEdition Core
 <#
 .SYNOPSIS
 Generate example scripts from the current repository.

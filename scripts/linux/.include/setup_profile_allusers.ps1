@@ -58,15 +58,12 @@ process {
 
     # *Copy global profiles
     if (Test-Path $CFG_PATH -PathType Container) {
-        if (-not (Test-Path $SCRIPTS_PATH)) {
-            New-Item $SCRIPTS_PATH -ItemType Directory | Out-Null
-        }
         # TODO to be removed, cleanup legacy aliases
         Get-ChildItem -Path $SCRIPTS_PATH -Filter '*_aliases_*.ps1' -File | Remove-Item -Force
         # PowerShell profile
         install -m 0644 $CFG_PATH/profile.ps1 $PROFILE.AllUsersAllHosts
         # PowerShell functions
-        if (-not (Test-Path $SCRIPTS_PATH)) {
+        if (-not (Test-Path $SCRIPTS_PATH -PathType Container)) {
             New-Item $SCRIPTS_PATH -ItemType Directory | Out-Null
         }
         install -m 0644 $CFG_PATH/_aliases_common.ps1 $SCRIPTS_PATH

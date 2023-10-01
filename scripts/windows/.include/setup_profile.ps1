@@ -48,6 +48,13 @@ begin {
 
     # set location to workspace folder
     Push-Location "$PSScriptRoot/../../.."
+
+    # check if git installed
+    $gitInstalled = if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
+        $true
+    } else {
+        $false
+    }
 }
 
 process {
@@ -64,9 +71,6 @@ process {
     # *PowerShell functions
     Write-Host 'setting up profile...' -ForegroundColor Cyan
     # TODO to be removed, cleanup legacy aliases
-    if (-not (Test-Path $scriptsPath)) {
-        New-Item $scriptsPath -ItemType Directory | Out-Null
-    }
     Get-ChildItem -Path $scriptsPath -Filter '*_aliases_*.ps1' -File | Remove-Item -Force
     if (-not (Test-Path $scriptsPath -PathType Container)) {
         New-Item $scriptsPath -ItemType Directory | Out-Null
@@ -119,7 +123,7 @@ process {
             Write-Host 'setting PSGallery trusted...'
             Set-PSResourceRepository -Name PSGallery -Trusted -ApiVersion v2
         }
-        for ($i = 0; (Test-Path /usr/bin/git) -and -not (Get-Module posh-git -ListAvailable) -and $i -lt 5; $i++) {
+        for ($i = 0; $gitInstalled -and -not (Get-Module posh-git -ListAvailable) -and $i -lt 5; $i++) {
             Write-Host 'installing posh-git...'
             Install-PSResource -Name posh-git -Scope CurrentUser
         }
@@ -138,7 +142,7 @@ process {
         $modules.Add('do-az') | Out-Null
         Write-Verbose "Added `e[3mdo-az`e[23m to be installed from ps-modules."
     }
-    if (Get-Command git.exe -CommandType Application -ErrorAction SilentlyContinue) {
+    if ($gitInstalled) {
         $modules.Add('aliases-git') | Out-Null
         Write-Verbose "Added `e[3maliases-git`e[23m to be installed from ps-modules."
     }
@@ -149,7 +153,7 @@ process {
         [IO.File]::WriteAllText($PROFILE, (kubectl.exe completion powershell).Replace("''kubectl''", "''k''"))
     }
 
-    if ($modules) {
+    if ($gitInstalled -and $modules) {
         $targetRepo = 'ps-modules'
         # determine if target repository exists and clone if necessary
         $getOrigin = { git config --get remote.origin.url }

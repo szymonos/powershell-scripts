@@ -1,3 +1,4 @@
+#!/usr/bin/pwsh -nop
 #Requires -Module Microsoft.PowerShell.PSResourceGet
 <#
 .SYNOPSIS

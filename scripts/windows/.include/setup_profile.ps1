@@ -107,7 +107,7 @@ process {
     # install Microsoft.PowerShell.PSResourceGet
     for ($i = 0; -not (Get-Module Microsoft.PowerShell.PSResourceGet -ListAvailable) -and $i -lt 5; $i++) {
         Write-Host 'installing PSResourceGet...'
-        Install-Module Microsoft.PowerShell.PSResourceGet -AllowPrerelease -Scope CurrentUser
+        Install-Module Microsoft.PowerShell.PSResourceGet -Scope CurrentUser
     }
     # install/update modules
     if (Get-InstalledModule -Name Microsoft.PowerShell.PSResourceGet -ErrorAction SilentlyContinue) {
@@ -117,7 +117,7 @@ process {
         | Select-Object -Skip 1 `
         | Uninstall-Module
         # update Microsoft.PowerShell.PSResourceGet
-        Update-Module Microsoft.PowerShell.PSResourceGet -AllowPrerelease -Scope CurrentUser
+        Update-Module Microsoft.PowerShell.PSResourceGet -Scope CurrentUser
 
         if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
             Write-Host 'setting PSGallery trusted...'

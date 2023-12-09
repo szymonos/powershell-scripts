@@ -4,7 +4,7 @@ scripts/macos/.include/install_exa.sh
 '
 
 if type exa &>/dev/null; then
-  brew upgrade exa
+  brew upgrade eza
 else
-  brew install exa
+  brew install eza
 fi

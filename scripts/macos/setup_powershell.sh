@@ -46,7 +46,7 @@ fi
 # install packages
 printf "\e[96minstalling packages...\e[0m\n"
 scripts/macos/.include/install_brew.sh >/dev/null
-scripts/macos/.include/install_exa.sh
+scripts/macos/.include/install_eza.sh
 scripts/macos/.include/install_pwsh.sh
 # set up profile for all users
 printf "\e[96msetting up profile for all users...\e[0m\n"

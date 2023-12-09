@@ -16,13 +16,13 @@ if (-not (Test-Path $profileDir -PathType Container)) {
     New-Item $profileDir -ItemType Directory | Out-Null
 }
 # set up Microsoft.PowerShell.PSResourceGet and update installed modules
-if (Get-InstalledModule -Name Microsoft.PowerShell.PSResourceGet) {
+if (Get-Module -Name Microsoft.PowerShell.PSResourceGet -ListAvailable) {
     if (-not (Get-PSResourceRepository -Name PSGallery).Trusted) {
         Write-Host 'setting PSGallery trusted...'
-        Set-PSResourceRepository -Name PSGallery -Trusted -ApiVersion v2
+        Set-PSResourceRepository -Name PSGallery -Trusted
         # update help, assuming this is the initial setup
         Write-Host 'updating help...'
-        Update-Help
+        Update-Help -UICulture en-US
     }
     # update existing modules
     if (Test-Path scripts/linux/.include/update_psresources.ps1 -PathType Leaf) {
@@ -33,13 +33,20 @@ if (Get-InstalledModule -Name Microsoft.PowerShell.PSResourceGet) {
 if (Get-Command oh-my-posh -CommandType Application) {
     oh-my-posh disable notice
 }
+# install PSReadLine
+for ($i = 0; ((Get-Module PSReadLine -ListAvailable).Count -eq 1) -and $i -lt 5; $i++) {
+    Write-Host 'installing PSReadLine...'
+    Install-PSResource -Name PSReadLine
+}
 
+# install kubectl autocompletion
 $kubectlSet = try { Select-String '__kubectl_debug' -Path $PROFILE -Quiet } catch { $false }
 if ((Test-Path /usr/bin/kubectl) -and -not $kubectlSet) {
     Write-Host 'adding kubectl auto-completion...'
     (/usr/bin/kubectl completion powershell).Replace("'kubectl'", "'k'") >$PROFILE
 }
 
+# add conda init to the user profile
 $condaSet = try { Select-String 'conda init' -Path $PROFILE.CurrentUserAllHosts -Quiet } catch { $false }
 if ((Test-Path $HOME/miniconda3/bin/conda) -and -not $condaSet) {
     Write-Verbose 'adding miniconda initialization...'

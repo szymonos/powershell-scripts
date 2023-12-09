@@ -45,7 +45,7 @@ if [[ -n "$omp_theme" || -f /usr/bin/oh-my-posh ]]; then
 fi
 # install packages
 printf "\e[96minstalling packages...\e[0m\n"
-sudo scripts/linux/.include/install_exa.sh >/dev/null
+sudo scripts/linux/.include/install_eza.sh >/dev/null
 sudo scripts/linux/.include/install_pwsh.sh >/dev/null
 # set up profile for all users
 printf "\e[96msetting up profile for all users...\e[0m\n"

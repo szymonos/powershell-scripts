@@ -1,11 +1,17 @@
 # *Functions
-function exa { & /usr/bin/env exa -g --color=auto --time-style=long-iso --group-directories-first @args }
-function ll { exa -lah @args }
+function eza { & /usr/bin/env eza -g --color=auto --time-style=long-iso --group-directories-first --color-scale=all --git-repos @args }
+function l { eza -1 @args }
+function lsa { eza -a @args }
+function ll { eza -lah @args }
+function lt { eza -Th @args }
+function lta { eza -aTh --git-ignore @args }
+function ltd { eza -DTh @args }
+function ltad { eza -aDTh --git-ignore @args }
+function llt { eza -lTh @args }
+function llta { eza -laTh --git-ignore @args }
 function grep { $input | & /usr/bin/env grep --color=auto @args }
 function less { $input | & /usr/bin/env less -FRXc @args }
 function ls { & /usr/bin/env ls --color=auto @args }
-function l { ls -1 @args }
-function lsa { ls -lah @args }
 function md { mkdir -p @args }
 function mkdir { & /usr/bin/env mkdir -pv @args }
 function mv { & /usr/bin/env mv -iv @args }
